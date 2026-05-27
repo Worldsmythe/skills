@@ -1,0 +1,55 @@
+name: Package skills
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Package skills
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          shopt -s nullglob
+          found=0
+          for skill_md in */SKILL.md; do
+            dir="${skill_md%/SKILL.md}"
+            echo "::group::Packaging ${dir}"
+            python -m scripts.package_skill "${dir}" dist
+            echo "::endgroup::"
+            found=1
+          done
+          if [ "${found}" -eq 0 ]; then
+            echo "No skills found (no top-level */SKILL.md)"
+            exit 1
+          fi
+          ls -la dist
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          TAG="build-${RUN_NUMBER}-${SHORT_SHA}"
+          gh release create "${TAG}" dist/*.skill \
+            --target "${GITHUB_SHA}" \
+            --title "Build ${RUN_NUMBER} (${SHORT_SHA})" \
+            --notes "Automated build from ${GITHUB_SHA}" \
+            --latest
