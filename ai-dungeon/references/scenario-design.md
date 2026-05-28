@@ -8,7 +8,8 @@ and publishing. For what actually works in practice, see `scenario-patterns.md`.
 2. [Branch Trees: Leaf vs Non-Leaf](#branch-trees)
 3. [Scenario Types](#scenario-types)
 4. [Placeholders](#placeholders)
-5. [Publishing and Visibility (incl. Tags)](#publishing-and-visibility)
+5. [Story Card Trigger Words](#story-card-trigger-words)
+6. [Publishing and Visibility (incl. Tags)](#publishing-and-visibility)
 
 ## Scenario Structure
 
@@ -322,6 +323,96 @@ a fragment that reads naturally in the final text.
 ### Integration with Story Cards
 Player answers can trigger Story Cards. If a player enters "Elena" as their name and a
 Story Card has trigger "Elena", that card activates during play.
+
+---
+
+## Story Card Format
+
+A story card is a small record with these fields:
+
+```json
+{
+  "keys": "Elena, princess",
+  "value": "Elena is the crown princess of Valtara, sharp-tongued and loyal.",
+  "type": "character",
+  "title": "Elena",
+  "description": "",
+  "useForCharacterCreation": false
+}
+```
+
+| Field | Purpose | AI-visible? |
+|-------|---------|-------------|
+| `keys` | Comma-separated trigger words; the entry injects when one appears in recent text | no (controls injection) |
+| `value` | The entry text injected into context when triggered | **yes** |
+| `type` | Category: `character`, `location`, `faction`, `race`, `class`, `item`, … | no |
+| `title` | Display name in the editor | no |
+| `description` | Author notes; also player-facing in a Character Creator | no during play |
+| `useForCharacterCreation` | Surfaces the card as a pickable option in a Character Creator | n/a |
+
+**Naming gotcha**: the field is `value` in the GraphQL/JSON shape but `entry` in the
+scripting API and the web UI — same data, two names. **Repeat the subject's name inside
+the `value`**: the AI sees the entry text but not the `title`, so a card titled "Elena"
+whose value starts with "She is…" gives the AI no anchor.
+
+For the full GraphQL type (including `updatedAt`, `deletedAt`, `factionName`) see
+`graphql-api.md` → "StoryCard Object". For the markdown authoring format and JSON↔markdown
+conversion, see `cli.md` → the `convert` command.
+
+## Story Card Trigger Words
+
+Trigger words decide when a card's entry gets injected. Getting them right is the
+difference between a card that fires reliably and one that never fires (or fires
+constantly on the wrong words). The core complication is **spaces**.
+
+### How Spaces Affect Matching
+
+A trigger is matched as a substring of recent text. Spaces around the trigger control
+how greedy that match is. The same word has four meaningfully different forms:
+
+| Trigger form | Matches | Risk |
+|--------------|---------|------|
+| `elf` (no spaces) | "elf", "shelf", "self", "elves"... | Bleeds into longer words |
+| ` elf` (leading space) | " elf" but not "shelf" | Won't fire at start of line/dialogue |
+| `elf ` (trailing space) | "elf " but not "elfin" | Won't fire before punctuation |
+| ` elf ` (both spaces) | only " elf " | Most precise, most fragile |
+
+**The bleeding problem**: a no-space trigger like `elf` fires on "shelf", "self", and
+"yourself" because the letters are contained inside those words. For short or common
+substrings, add spaces to prevent false positives.
+
+**The start-of-line problem**: a leading-space trigger like ` elf` won't fire when "elf"
+starts a sentence or comes right after a quote mark (`"elf"`), because there's no space
+preceding it. Cover the common preceding characters with extra triggers: ` elf,"elf,'elf`.
+
+### Rules and Shortcuts
+
+- **Capitalization doesn't matter.** `elf` and `ELF` are equivalent.
+- **Plural "s" is automatic** — `frisbee` also catches `frisbees`, *unless* you added a
+  trailing space (`frisbee `). Irregular plurals are NOT automatic — `elf` will not catch
+  `elves`; add a separate trigger.
+- **Longer phrases protect against bleeding.** A `dragon` trigger fires inside "Yellow
+  Dragon Inn". But if the dragon's trigger is `bronze dragon`, the Inn won't trigger it
+  (it lacks "bronze").
+- **Hyphens/symbols separate words.** `Yellow-Dragon` is treated as one token, so a
+  ` Dragon` trigger (with leading space) won't fire on it.
+- **AI-written triggers fire next turn.** If the AI's output contains a trigger word, the
+  card activates on the *following* action, not the current one. Player-typed triggers fire
+  immediately.
+
+### Stubbing: The Pro Move
+
+Stub words to a common, specific root instead of listing every variant. To catch all of
+"therapy, therapies, therapist, therapeutic", use a single trigger: `therap`. It's specific
+enough not to collide with anything unintended, and covers the whole family. This consolidates
+triggers and saves space in the 100-char key budget.
+
+### Generating Triggers
+
+The `keys` command in the bundled CLI (`scripts/aid.py`) implements AutoCards'
+`buildKeys` algorithm — give it a word and it produces a properly space-and-punctuation-guarded
+trigger set sized to the word's length (short words get both-sided guards, long words are
+used bare). See `references/cli.md` for more details.
 
 ---
 
