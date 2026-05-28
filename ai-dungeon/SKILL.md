@@ -41,6 +41,54 @@ components, scripting, API inspection, and context-budget reasoning.
   APIs, sandbox limits, script patterns, TypeScript declarations
 - `references/graphql-api.md`: GraphQL endpoint, auth, key queries, content model,
   search/discovery notes
+- `references/cli.md`: bundled CLI usage for API querying, scenario analysis,
+  branch inspection, card conversion, trigger-key generation, and tag linting
+
+## Bundled CLI
+
+The bundled script is `scripts/aid.py`. Its examples use `aid` as the installed
+command name; run it as `python scripts/aid.py ...` from the skill folder when
+it is not installed on PATH.
+
+Use it when the user asks to inspect real AI Dungeon data, analyze public
+scenarios, generate story-card trigger keys, convert cards, or lint tags.
+Networked commands need `requests` and a Firebase token; `keys`, `convert`, and
+`tags` work offline without either.
+
+Common commands:
+
+```bash
+python scripts/aid.py token extract
+python scripts/aid.py trending --rating everyone --days 7
+python scripts/aid.py popular --limit 10
+python scripts/aid.py details <shortId>
+python scripts/aid.py cards <shortId> --md
+python scripts/aid.py tree <shortId>
+python scripts/aid.py analyze popular --deep --sfw
+python scripts/aid.py keys "elf"
+python scripts/aid.py tags fantasy romance darkhumor
+```
+
+### Caution with the user's account
+
+The CLI is authenticated as the user and also has write commands that change their
+real, live content: `create`, `duplicate`, `update`, `scripts`, `options`, `card`,
+`add-cards`, `import-cards`, `delete`, `restore`. Treat reading public content very
+differently from touching the account:
+
+- **Don't mutate without clear, specific permission.** Run an account-altering command
+  only when the user actually asked for that change. State what you're about to do
+  first; don't reflexively pass `--yes`. Be especially careful with the destructive
+  ones — `delete` and `import-cards` (which *replaces* the whole card set), `add-cards`
+  (writes N cards). When unsure, preview (dry-run / no `--yes`) and confirm.
+- **Never publish on their behalf.** Publishing is a moderation-gated action in the web
+  app, not a CLI command — don't try to script around it.
+- **Don't enumerate or scrape.** Don't list the user's library (`mine`), other creators'
+  catalogs (`creator`), or run broad `analyze`/`details` sweeps unless asked. Default to
+  the one scenario in front of you, and respect rate limits and the platform's terms.
+- Default to read-only, single-target actions on request; reach for writes only when the
+  intent is explicit. Editing an existing item is safer than creating, replacing, or
+  deleting — bias toward the least destructive command that does the job.
 
 ## Core Mental Model
 
