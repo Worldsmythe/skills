@@ -1,20 +1,15 @@
 # aid — Bundled AI Dungeon CLI
 
-`scripts/aid.py` is a command-line tool for querying the AI Dungeon GraphQL API and
-working with story cards offline. Use it to pull real scenario data (for analysis or
-inspiration), inspect how popular scenarios are built, convert story cards between formats,
-and generate trigger keys. It pairs directly with the patterns documented in
-`scenario-design.md` and `scenario-patterns.md`.
+`scripts/aid.py` queries the AI Dungeon GraphQL API and works with story cards offline.
+Use it to inspect real scenarios, convert cards between formats, and generate trigger
+keys. It pairs with `scenario-design.md` and `scenario-patterns.md`.
 
-> **Treat the user's account with care.** The CLI authenticates as the user, and the
-> commands below the read-only ones (`create`, `duplicate`, `update`, `scripts`,
-> `options`, `card`, `add-cards`, `import-cards`, `delete`, `restore`) change their real,
-> live content. Run a mutating command only when the user asked for that specific change;
-> state what you'll do and don't reflexively pass `--yes`. Be most careful with `delete`
-> and `import-cards` (a full card *replacement*). Never publish on their behalf —
-> publishing is moderation-gated in the web app, not a CLI action. And don't enumerate or
-> scrape: skip `mine`/`creator`/broad `analyze` sweeps unless asked, default to the one
-> scenario in front of you, and respect rate limits and the platform's terms.
+> **Treat the user's account with care.** Mutating commands (`create`, `duplicate`,
+> `update`, `scripts`, `options`, `card`, `add-cards`, `import-cards`, `delete`,
+> `restore`) change live content. Run them only on explicit request, state the action
+> first, and preview when useful. Be most careful with `delete`, `import-cards` (full
+> replacement), and broad `mine`/`creator`/`analyze` sweeps. Never publish on the user's
+> behalf; publishing is moderation-gated in the web app.
 
 ## Setup
 
@@ -176,12 +171,9 @@ call (`importStoryCards`) from a `.json` or `.md` file — autodetected, same fo
 pass `--yes`, and like card-create it checks ownership without reading state first to avoid
 the draft fork.
 
-`aid add-cards <shortId> <file>` is the **non-destructive** sibling: it keeps existing
-cards and adds the file's on top, by upserting each card with a fresh id (one request per
-card). Use it to append; use `import-cards` to wholesale-replace. Note the tempting
-"export → concat → import" merge does *not* work — reading the current cards to merge them
-forks the draft (the merged set lands in published, not the draft), which is exactly why
-`add-cards` upserts per-card with no pre-read instead.
+`aid add-cards <shortId> <file>` appends cards by upserting each one with a fresh id. Use
+it to append; use `import-cards` to replace the set. The tempting "export → concat →
+import" merge does *not* work because the pre-read can fork the draft.
 
 `aid delete <shortId>` removes a scenario or option branch you own. It's destructive,
 so without `--yes` it only previews what would go; pass `--yes` to actually delete.

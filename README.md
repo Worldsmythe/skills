@@ -1,10 +1,10 @@
 # Worldsmythe's Agent Skills
 
-This is a collection of skills that I use.
+Personal Codex skills.
 
 ## Skills
 
-- `ai-dungeon` - This is a skill for AI Dungeon: scenario design, scripting, and gameplay.
+- `ai-dungeon` - AI Dungeon scenario design, cli, scripting, and gameplay.
 
 ## Installation
 

@@ -223,29 +223,17 @@ Player sees: "A disgraced knight seeking redemption..."
 AI prompt model receives: the Entry text + other selected cards → generates opening.
 ```
 
-**Known issues and limitations** (as of mid-2026):
-- The prompt generation AI frequently gets world details wrong — e.g., a "Bioweapon" race
-  might produce a story about an ordinary person fighting for justice
-- The AI may forget which character the player created, since Character Creator doesn't
-  automatically add player info to Plot Essentials the way placeholders do. Players must
-  manually add their character info to Plot Essentials.
-- The generated prompt appends content after your Opening prompt — you can't prevent this,
-  it's by design
-- Placeholders (`${}`) are now supported in Character Creator mode (this was added after
-  the original launch — older guides may say otherwise)
-- The "Quickstart" button creates a random combination from all fields, which can produce
-  nonsensical results. Advise players to avoid it in your description.
-- The prompt generation quality is widely considered unreliable by the community
-
-**Practical advice for creators**:
-- Add a note to your description telling players to copy their character info into Plot
-  Essentials manually, since the AI will eventually forget
-- Consider adding a Plot Essential that explains this to new players (and asks them to
-  delete the note after reading)
-- Character Creator works best for **world sandboxes** with lots of content in classes,
-  races, locations, and factions — scenarios where you want the AI to take the story
-  wherever it wants based on the player's choices
-- If you want a specific plotline or reliable starting point, use Simple Start or MC instead
+**Known issues and creator advice** (as of mid-2026):
+- Prompt generation frequently gets world details wrong and can produce a weak or generic
+  opening. Use Simple Start or MC when the starting point needs to be reliable.
+- Character Creator does not automatically preserve player info in Plot Essentials. Tell
+  players to copy character details there, or include a temporary PE note that says so.
+- The generated prompt appends content after your Opening prompt; this is by design.
+- Placeholders (`${}`) are supported in Character Creator mode, despite older guides.
+- Quickstart picks a random combination from all fields and can produce nonsense. Warn
+  players in the description.
+- Character Creator works best for broad world sandboxes with lots of race, class,
+  location, and faction content.
 
 **Combining with Multiple Choice**: use MC branches where each branch is a Character
 Creator scenario. This gives structure (choose era → then create character within that era)
@@ -524,11 +512,9 @@ Published scenarios can appear in Trending. Based on recent play activity — ne
 engagement boost ranking.
 
 ### Description as Marketing
-The scenario Description is player-facing only (the AI never sees it). Top-performing
-descriptions read like pitches: a hook that sells the fantasy in 2-3 sentences, then
-features/credits/update history below the fold. Technical details (scripts used, card
-counts, version notes) go at the bottom. Tags should cover genre, theme, and mood —
-they're the primary search discovery mechanism.
+The scenario Description is player-facing only; the AI never sees it. Treat it as a short
+pitch first, then put features, credits, scripts used, card counts, and version notes below
+the fold. Tags cover genre, theme, and mood for search.
 
 ### Updating Published Scenarios
 Changes apply immediately. Existing adventures keep their state; new adventures use the

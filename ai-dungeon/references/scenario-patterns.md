@@ -38,7 +38,7 @@ cards and plot components, not the prompt.
 | Villain's Academy (156K, 89 cards) | `"Choose your preferred context size."` — pure MC navigation |
 | Star Wars (152K, 382 cards) | Single paragraph, world-setting |
 
-**Takeaway**: the prompt is a hook, not a world bible. Put lore in cards and Plot Essentials.
+The prompt is a hook, not a world bible. Put stable lore in cards and Plot Essentials.
 
 ### Card Count Is Bimodal (Exclude the Official Account First)
 
@@ -55,9 +55,9 @@ are 100+ card bibles (Faerûn 564, All-in-One Fantasy 433, Star Wars 382, 2026 1
 middle is real but thin and varied — Fiomar 53, Isekaied 53, My Hero Academia 30,
 Villain's Academy 89 — not the clean 20–35 band the official examples imply.
 
-**Takeaway**: build a world-bible (100+) or lean on placeholders/scripts (0). A hand-built
-mid-size set (30–90) works too, but the half-hearted 5-card scenario is what underperforms.
-You either build a world or you let the player/script do the work.
+The useful extremes are world-bible scale (100+) and placeholder/script-driven (0). A
+hand-built mid-size set (30–90) can work, but the half-hearted 5-card version usually does
+not.
 
 ### Multiple Choice Dominates All-Time
 
@@ -139,10 +139,8 @@ maximum personalization.
 empty plot components — all real content lives on leaf branches. The root is pure
 navigation ("Choose your preferred context size.").
 
-**Key insight**: the most successful scenarios commit to one strategy rather than spreading
-thin across all components. Faerûn puts everything in cards. Share A Home puts everything
-in placeholders. 2026 uses cards with minimal steering. Mixing strategies is fine, but
-each component should have a clear purpose.
+Successful scenarios commit to one strategy instead of spreading thin across every
+component. Mixing strategies is fine, but each component should have a clear job.
 
 ### Script-as-Product Is a Category
 
@@ -189,52 +187,41 @@ without manual card authoring. Installable into any scenario.
 monologue, goals, secrets, and self-reflection. Characters remember events and develop
 over time. Uses a JSON identity system per character.
 
-As of mid-2026, the majority of trending scenarios include one or both of these scripts.
-The `[IS🎭]` and `[🎴]` emoji tags in scenario titles are community shorthand for
-"Inner Self enabled" and "Auto-Cards enabled." When helping someone design a scenario,
-mentioning these scripts as options is almost always relevant — they're the closest thing
-AID has to a standard library.
+As of mid-2026, the majority of trending scenarios include one or both. The `[IS🎭]` and
+`[🎴]` title tags mean "Inner Self enabled" and "Auto-Cards enabled." Treat them as common
+options when a scenario needs dynamic cards or persistent NPC state.
 
 ---
 
 ## Design Best Practices
 
 ### Prompt (Opening) Writing
-- Keep it shorter than you think — a single evocative paragraph often outperforms a wall of text
-- The prompt is a hook, not a world bible. Lore goes in cards and Plot Essentials.
-- End with something to react to (a question, arriving threat, discovered mystery)
-- For MC scenarios, the root prompt just frames the choice — child titles become buttons
-- For placeholder-heavy scenarios, the prompt can BE the experience (a wizard-style Q&A)
+- Keep it short; a single evocative paragraph often beats a wall of setup.
+- End with something to react to: a question, arriving threat, or discovered mystery.
+- For MC scenarios, the root prompt frames the choice and child titles become buttons.
+- For placeholder-heavy scenarios, the prompt can be the experience: a wizard-style Q&A.
 
 ### Story Card Strategy
-- Commit to a real card set or skip cards entirely: 100+ for a world-bible, 30–90 for a
-  hand-built mid-size world, or 0 for script-/placeholder-driven scenarios. The
-  half-hearted 5-card middle is what underperforms
-- Build taxonomy hierarchies: broad concept card + specific sub-type cards sharing a trigger keyword
-- Use multiple trigger aliases for key entities ("The League of Villains, Villain Alliance")
-- Keep entries to 2-4 sentences; they compete with history for context space
-- Cross-reference cards to create chain activation
-- Don't bother with the Name/Notes fields unless using Character Creator — the AI only sees Entry
-- Test with Context Viewer: play, take turns, check which cards fire
+- Choose the card strategy deliberately: 100+ for a world-bible, 30–90 for a hand-built
+  mid-size world, or 0 for script-/placeholder-driven scenarios.
+- Build taxonomy hierarchies: broad concept card + sub-type cards sharing a trigger.
+- Use multiple trigger aliases for key entities.
+- Keep entries to 2-4 sentences; they compete with history for context space.
+- Cross-reference cards to create chain activation.
+- Skip Name/Notes unless using Character Creator; the AI only sees Entry.
+- Test with Context Viewer: play, take turns, check which cards fire.
 
 ### Plot Component Strategy
-- AI Instructions: rules, style, POV, behavioral constraints. Most steering goes here.
-  Top scenarios use detailed, specific instructions ("Don't describe thoughts, emotions
-  or decisions. Describe what other people say and do." — Faerûn).
-- Plot Essentials: only always-relevant facts. Don't duplicate story card content.
-  Mentioning key names here primes the AI to use them, which triggers their cards.
-  For placeholder scenarios, use PE as the permanent home for player-defined info
-  (the "placeholder-mirror" pattern: same placeholders in prompt AND PE, so answers
-  persist in always-on context after the prompt scrolls out of history).
-- Author's Note: current scene tone, genre cues. Keep short for meta-guidance effect.
-  Can be split: one placeholder for player theme choice + hard-coded style instructions.
+- AI Instructions: rules, style, POV, and behavioral constraints. Most steering goes here.
+- Plot Essentials: only always-relevant facts. Mentioning key names can prime card
+  triggers; placeholder scenarios can mirror prompt answers here for persistence.
+- Author's Note: current scene tone and genre cues. Keep it short.
 - Story Summary: usually auto-generated. Only pre-fill for needed backstory.
 
 ### Context-Tier-Aware Design
-Consider building separate MC branches for different context tiers (Villain's Academy
-pattern). A 4K-context free-tier player and a 32K Mythic player have radically different
-card budgets. Offering "Low Context" and "High Context" branches with appropriately sized
-card sets and Plot Essentials prevents the free-tier experience from being bloated.
+Separate MC branches can target different context tiers. A 4K free-tier player and a 32K
+Mythic player have radically different card budgets; "Low Context" and "High Context"
+branches let each leaf carry the right amount.
 
 ### Common Mistakes
 1. Giant prompt with no story cards — put stable lore in cards
@@ -246,11 +233,11 @@ card sets and Plot Essentials prevents the free-tier experience from being bloat
 7. Cards on MC root nodes — they're ignored during play, put them on leaves
 
 ### Quality Assurance
-- Playtest from start as a new player, multiple times
-- Test every branch/option path
-- Verify story cards trigger via Context Viewer
-- Check AI behavior matches your intentions
-- Have others beta test before publishing
+- Playtest from start as a new player.
+- Test every branch path.
+- Verify story cards trigger via Context Viewer.
+- Check AI behavior against the intended POV, tone, and constraints.
+- Beta test before publishing.
 
 ---
 
@@ -264,6 +251,6 @@ card sets and Plot Essentials prevents the free-tier experience from being bloat
 6. **(Optional) Scenario Options** — branch tree for multiple-choice setup
 7. **(Optional) Character Creator** — character-type Story Cards with Notes for player-facing text
 8. **(Optional) Placeholders** — `${questions}` for player customization
-9. **(Optional) Scripting** — consider Auto-Cards for dynamic world-building, Inner Self
-   for NPC persistence, custom scripts for inventories/dice/quests/commands
+9. **(Optional) Scripting** — Auto-Cards for dynamic cards, Inner Self for NPC persistence,
+   custom scripts for inventories/dice/quests/commands
 10. **Test via Context Viewer** — check card activation, budget allocation, AI behavior

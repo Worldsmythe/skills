@@ -71,24 +71,17 @@ python scripts/aid.py tags fantasy romance darkhumor
 
 ### Caution with the user's account
 
-The CLI is authenticated as the user and also has write commands that change their
-real, live content: `create`, `duplicate`, `update`, `scripts`, `options`, `card`,
-`add-cards`, `import-cards`, `delete`, `restore`. Treat reading public content very
-differently from touching the account:
+The CLI authenticates as the user. Treat public reads very differently from commands that
+touch live content: `create`, `duplicate`, `update`, `scripts`, `options`, `card`,
+`add-cards`, `import-cards`, `delete`, `restore`.
 
-- **Don't mutate without clear, specific permission.** Run an account-altering command
-  only when the user actually asked for that change. State what you're about to do
-  first; don't reflexively pass `--yes`. Be especially careful with the destructive
-  ones — `delete` and `import-cards` (which *replaces* the whole card set), `add-cards`
-  (writes N cards). When unsure, preview (dry-run / no `--yes`) and confirm.
-- **Never publish on their behalf.** Publishing is a moderation-gated action in the web
-  app, not a CLI command — don't try to script around it.
-- **Don't enumerate or scrape.** Don't list the user's library (`mine`), other creators'
-  catalogs (`creator`), or run broad `analyze`/`details` sweeps unless asked. Default to
-  the one scenario in front of you, and respect rate limits and the platform's terms.
-- Default to read-only, single-target actions on request; reach for writes only when the
-  intent is explicit. Editing an existing item is safer than creating, replacing, or
-  deleting — bias toward the least destructive command that does the job.
+- Mutate only with clear, specific permission. State the action first, preview when useful,
+  and do not reflexively pass `--yes`.
+- Be especially careful with `delete`, `import-cards` (replaces the whole card set), and
+  `add-cards` (writes multiple cards).
+- Never publish on the user's behalf. Publishing is moderation-gated in the web app.
+- Do not enumerate libraries, creator catalogs, or broad analysis sweeps unless asked.
+  Default to read-only, single-target work.
 
 ## Core Mental Model
 
