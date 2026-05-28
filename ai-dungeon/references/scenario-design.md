@@ -5,11 +5,12 @@ and publishing. For what actually works in practice, see `scenario-patterns.md`.
 
 ## Table of Contents
 1. [Scenario Structure](#scenario-structure)
-2. [Branch Trees: Leaf vs Non-Leaf](#branch-trees)
-3. [Scenario Types](#scenario-types)
-4. [Placeholders](#placeholders)
-5. [Story Card Trigger Words](#story-card-trigger-words)
-6. [Publishing and Visibility (incl. Tags)](#publishing-and-visibility)
+2. [Plot Component Conventions](#plot-component-conventions)
+3. [Branch Trees: Leaf vs Non-Leaf](#branch-trees)
+4. [Scenario Types](#scenario-types)
+5. [Placeholders](#placeholders)
+6. [Story Card Trigger Words](#story-card-trigger-words)
+7. [Publishing and Visibility (incl. Tags)](#publishing-and-visibility)
 
 ## Scenario Structure
 
@@ -37,6 +38,75 @@ structure itself (resolved to the single selected leaf path).
 | Scripts          | JavaScript hooks (onInput, onModelContext, onOutput) |
 | Tags             | Keywords for discoverability                         |
 | Configuration    | Visibility, NSFW flag, comments, third person default|
+
+---
+
+## Plot Component Conventions
+
+How top community scenarios actually *write* each component (sampled from the most-played
+Everyone+Teen scenarios; see `scenario-patterns.md` for the strategy-level breakdown). The
+components are a division of labor — almost no scenario fills all of them. Choose a home
+for each job and leave the rest empty rather than spreading thin.
+
+### Opening prompt
+
+Three archetypes, and length is bimodal — a few words or a full paragraph, rarely between:
+
+- **World-setting paragraph** — one evocative, *third-person* paragraph that establishes
+  the setting and stops (no "you," no situation). Used by card-bibles, where the world
+  lives in cards: "Land of intrigue, adventure, magic and mysticism, Faerûn is…"
+- **Placeholder wizard** — the prompt *is* a setup form in second person:
+  "You are ${name}, a ${age} year old ${gender}…". The opening does the character creation.
+- **Navigation menu** (MC roots only) — one line that frames the choice ("Choose your
+  preferred context size."); the child branch titles are the buttons.
+- Occasionally a concrete in-medias-res scene to react to.
+
+Second person is the default for anything player-centered; world-setting paragraphs are
+impersonal.
+
+### Plot Essentials
+
+Either empty or a template — rarely free prose.
+
+- **Empty** when story cards carry the world (card-bibles leave PE blank).
+- **Labeled / placeholder template** the player or AI fills: `[ Player: - Name: - Gender:
+  - Age: - Appearance: … ] [Setting: …]`, or a character sheet of `${}` blanks.
+- **Placeholder-mirror** — duplicate the prompt's `${}` answers into PE so they persist in
+  always-on context after the opening scrolls out of history (some prefix it with the
+  `/remember` script command).
+- Otherwise a couple of always-true anchors: "You are a supervillain.", "You are 16,
+  enrolled at U.A. High."
+
+Keep it always-true and short; don't restate story-card content.
+
+### Author's Note
+
+Short style/genre tags, or empty — never prose. When used, a compact labeled micro-format:
+a genre+tone one-liner ("A swashbuckling adventure and cozy fantasy story set in Faerûn."),
+or labeled tags ("GENRE Science Fiction… THEME Jedi, Sith…", "[Writing Style:Fantasy]",
+"Writing style: …  Theme: Highschool, Romance"). It steers by position, so keep it a few
+lines.
+
+### AI Instructions
+
+The real steering home when a scenario needs control. Recurring ingredients:
+
+- **Role**: "You're a storyteller and gamemaster", "Role: Narrative Writer", "dungeon master".
+- **POV / tense**, stated explicitly: "Write in second person, present tense."
+- **Behavioral don'ts**: "Don't describe thoughts, emotions or decisions — describe what
+  other people say and do."
+- **Action-token semantics**: "Text preceded by > is an attempted action"; "unrealistic
+  player actions fail."
+- **Anti-summarization**: "Continue where the story left off, even mid-sentence."
+
+Custom AI Instructions *replace* the defaults (they don't layer), so restate the basics you
+still want.
+
+### Formatting cues that recur
+
+Bracket and label mini-formats appear across all components because the model parses them
+reliably: `[Player: - Name: …]`, `GENRE … THEME …`, `## directive`, `[Writing Style:Fantasy]`.
+Prefer them over prose paragraphs for structured cues.
 
 ---
 
