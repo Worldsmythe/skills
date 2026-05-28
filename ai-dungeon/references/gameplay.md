@@ -5,11 +5,57 @@ troubleshoot common problems. Sourced from Latitude community team guides (Wilma
 Le Onyx) and experienced creator advice.
 
 ## Table of Contents
-1. [Managing Plot Components During Play](#managing-plot-components-during-play)
-2. [Techniques for Coherence](#techniques-for-coherence)
-3. [Common Problems and Fixes](#common-problems-and-fixes)
+1. [Context and Tiers](#context-and-tiers)
+2. [Managing Plot Components During Play](#managing-plot-components-during-play)
+3. [Story Cards During Play](#story-cards-during-play)
+4. [Techniques for Coherence](#techniques-for-coherence)
+5. [Common Problems and Fixes](#common-problems-and-fixes)
 
 ---
+
+## Context and Tiers
+
+Every turn, AI Dungeon assembles a context window from plot components, triggered cards,
+summary/memory systems, recent history, and the latest action. Content at the beginning and
+end of context gets the most attention, so Plot Essentials and Author's Note are the
+strongest steering tools.
+
+Context order:
+
+```text
+1. AI Instructions
+2. Plot Essentials
+3. World Lore: triggered Story Cards
+4. Story Summary
+5. Memories
+6. Recent Story
+7. [Author's note: ...]
+8. Last Action
+9. Front Memory
+10. Buffer Tokens
+```
+
+Required elements (AI Instructions, Plot Essentials, Story Summary, Author's Note, Front
+Memory, Last Action) can use up to roughly 70% of total context. When they compete for
+space, priority is: Front Memory and Last Action, Author's Note, Plot Essentials, AI
+Instructions, then Story Summary.
+
+Dynamic elements use the remaining budget, roughly split between Story Cards, recent
+history, and Memory Bank. Cards are usually the first thing squeezed when context is tight,
+so keep card entries compact.
+
+Tier limits change often; verify live before giving upgrade advice. Current working model:
+
+| Tier | Context | Memory Bank slots | Monthly Credits |
+|------|---------|-------------------|-----------------|
+| Wanderer | 4K | 25 | 0 |
+| Champion | 8K | 100 | 760 |
+| Legend | 16K | 200 | 1,650 |
+| Mythic | 32K | 400 | 2,750 |
+
+Shadow tiers above Mythic increase context further. Some models support Credit-per-action
+context extensions. For design, treat 4K as the default constraint unless the scenario
+explicitly targets paid tiers.
 
 ## Managing Plot Components During Play
 
@@ -36,20 +82,6 @@ Story Cards.
 changed, and trim anything that wasn't mentioned in the story and doesn't need to be.
 Information in PE has a big effect on where the story goes — the AI tries to use
 everything in context, so stale info actively pulls the story in wrong directions.
-
-### Story Cards (SC) — Occasionally Relevant Info
-
-Create a card whenever something worth remembering appears:
-- You meet an interesting character → card
-- You discover a cool location → card
-- You acquire a notable item → card
-- An important scene happens that you want remembered long-term → card
-
-Update cards when things change. Remove info you don't want referenced anymore. The more
-you wait, the more cleanup you'll need later.
-
-**Don't duplicate PE content in cards.** If something is always relevant, it belongs in
-PE. If it's only relevant when mentioned, it belongs in a card.
 
 ### AI Instructions (AIN) — Behavioral Rules
 
@@ -82,6 +114,45 @@ manual edits feed back into subsequent auto-summarization and can cause drift.
 Automated. You don't need to manage it — it creates memories from every ~6 actions,
 embeds them as vectors, and retrieves relevant ones each turn. Just make sure it's enabled
 (Gameplay → AI Models → Memory System).
+
+---
+
+## Story Cards During Play
+
+Story Cards are occasionally relevant memory. Use them for characters, locations, factions,
+items, world rules, and important events that should appear only when triggered.
+
+Create a card whenever something worth remembering appears:
+- You meet an interesting character → card
+- You discover a cool location → card
+- You acquire a notable item → card
+- An important scene happens that you want remembered long-term → card
+
+Card fields:
+
+| Field | AI sees it? | Purpose |
+|-------|-------------|---------|
+| Type | No | Category: Character, Location, Faction, Item, Custom, etc. |
+| Name | No | Your editor label |
+| Entry | Yes | Text injected as World Lore when the card triggers |
+| Triggers | No | Keywords that activate the card |
+| Notes | No | Author notes; player-facing text in Character Creator |
+
+Repeat the subject's name inside the Entry. The AI sees the Entry but not the Name field,
+so a card named `Elena` whose entry starts with "She is..." loses its anchor.
+
+Keep entries short: usually 2-4 sentences. Update cards when facts change, and remove facts
+you no longer want referenced. The longer you wait, the more cleanup the story needs.
+
+Do not duplicate Plot Essentials content in cards. If something is always relevant, it
+belongs in PE. If it is only relevant when mentioned, it belongs in a card.
+
+Cards supply what exists; Author's Note tells the model how to render it. A castle card
+with a horror Author's Note plays differently from the same castle card with a whimsical
+tour-guide Author's Note.
+
+For trigger mechanics, spacing, substring bleed, plural behavior, and `aid keys`, see
+`scenario-design.md` → "Story Card Trigger Words".
 
 ---
 
