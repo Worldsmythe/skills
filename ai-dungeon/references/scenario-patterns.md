@@ -4,6 +4,12 @@ Data-driven patterns from analyzing top community scenarios, plus practical desi
 guidelines. For structural mechanics (branch trees, scenario types, placeholders), see
 `scenario-design.md`.
 
+The card-count and design-pattern breakdowns below are reproducible with the bundled
+CLI: `aid analyze popular --deep --sfw --no-official` and `aid analyze trending --deep
+--sfw` regenerate them against live data. Use `--no-official` for community analysis —
+the platform's own `aidungeon` account authors the default starters and a band of
+example scenarios that otherwise dominate the top of `popular` and skew the stats.
+
 ## Table of Contents
 1. [Patterns from Popular Scenarios](#patterns-from-popular-scenarios)
 2. [Design Best Practices](#design-best-practices)
@@ -34,11 +40,24 @@ cards and plot components, not the prompt.
 
 **Takeaway**: the prompt is a hook, not a world bible. Put lore in cards and Plot Essentials.
 
-### Card Count Is Bimodal
+### Card Count Is Bimodal (Exclude the Official Account First)
 
-Successful scenarios either go deep on cards (Faerûn: 564, Star Wars: 382, 2026: 145) or
-have literally zero (Share A Home, Auto-Cards). There's no "just 5 cards" in the top tier.
-You either build a world bible or you let the player/script do the work.
+A trap the raw `popular` list sets: the official `aidungeon` account authors the default
+starters *and* a stable of example scenarios (Kedar, Xaxas, Penwick, Winterbloom, Planet
+Omega, Alarathos, Gorgon, Besatheus), almost all in a tidy 20–35 card band. They're
+platform-promoted and sit near the top of `popular`, so the middle of the distribution
+looks fuller than the community actually builds. Always analyze with `--no-official`.
+
+Filtering them out (`aid analyze popular --deep --sfw --no-official`, late May 2026) the
+community top tier is sharply bimodal: of ~17 scenarios, 7 carry zero cards (placeholder-
+or script-driven: Share A Home, Auto-Cards, Supervillain RPG, the SCP Foundation) and 4
+are 100+ card bibles (Faerûn 564, All-in-One Fantasy 433, Star Wars 382, 2026 145). The
+middle is real but thin and varied — Fiomar 53, Isekaied 53, My Hero Academia 30,
+Villain's Academy 89 — not the clean 20–35 band the official examples imply.
+
+**Takeaway**: build a world-bible (100+) or lean on placeholders/scripts (0). A hand-built
+mid-size set (30–90) works too, but the half-hearted 5-card scenario is what underperforms.
+You either build a world or you let the player/script do the work.
 
 ### Multiple Choice Dominates All-Time
 
@@ -146,11 +165,12 @@ The all-time popular list and the current trending list reward different designs
 Villain's Academy) with deep card sets and branching setup flows. These are replayable
 systems — players come back to try different branches.
 
-**Trending** (mid-2026) is almost entirely focused Simple Start scenarios with a single
-compelling premise, low card counts, and LewdLeah's scripts (Inner Self, Auto-Cards)
-handling persistence and memory. Descriptions read like anime episode synopses or light
-novel titles — they sell the fantasy, with technical details (scripts used, update history)
-at the bottom.
+**Trending** (`aid analyze trending --deep --sfw`, top 18 Everyone+Teen) is almost
+entirely focused Simple Start scenarios with a single compelling premise, low
+card counts, and LewdLeah's scripts (Inner Self, Auto-Cards) handling
+persistence and memory. Descriptions read like anime episode synopses or light
+novel titles — they sell the fantasy, with technical details (scripts used,
+update history) at the bottom.
 
 The meta has shifted: instead of building 500 cards by hand, creators set up one strong
 situation and let Auto-Cards generate cards dynamically during play, while Inner Self gives
@@ -187,7 +207,9 @@ AID has to a standard library.
 - For placeholder-heavy scenarios, the prompt can BE the experience (a wizard-style Q&A)
 
 ### Story Card Strategy
-- Go big or go home: 100+ cards for world-bible scenarios, 0 for script-driven or placeholder scenarios
+- Commit to a real card set or skip cards entirely: 100+ for a world-bible, 30–90 for a
+  hand-built mid-size world, or 0 for script-/placeholder-driven scenarios. The
+  half-hearted 5-card middle is what underperforms
 - Build taxonomy hierarchies: broad concept card + specific sub-type cards sharing a trigger keyword
 - Use multiple trigger aliases for key entities ("The League of Villains, Villain Alliance")
 - Keep entries to 2-4 sentences; they compete with history for context space
