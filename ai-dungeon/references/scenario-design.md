@@ -8,7 +8,8 @@ and publishing. For what actually works in practice, see `scenario-patterns.md`.
 2. [Branch Trees: Leaf vs Non-Leaf](#branch-trees)
 3. [Scenario Types](#scenario-types)
 4. [Placeholders](#placeholders)
-5. [Publishing and Visibility](#publishing-and-visibility)
+5. [Publishing and Visibility (incl. Tags)](#publishing-and-visibility)
+
 ## Scenario Structure
 
 A Scenario is a reusable template. When a player "plays" a scenario, a new Adventure is
@@ -337,6 +338,25 @@ Story Card has trigger "Elena", that card activates during play.
 ### Content Rating
 Scenarios have content ratings: Everyone, Teen, Mature, Unrated. NSFW flag required for
 mature content.
+
+### Tags
+
+Tags are the primary discovery mechanism. AID's engine has strict formatting rules:
+
+- **Lowercase.** Tags are case-insensitive; `Romance` and `romance` are the same.
+- **Alphanumeric only.** No punctuation, emojis, slashes. `scifi` is more conventional than `sci-fi`.
+- **10 tags maximum.** It's a hard limit, not a suggestion. Be strategic.
+
+Suggested category budget (from Yuki's community tagging guide):
+- **Genre** (max 2): fantasy, scifi, romance, horror, isekai, mystery, comedy, sliceoflife
+- **Themes** (as needed): redemption, betrayal, coming of age, found family, revenge, power fantasy
+- **Setting** (max 3): medieval, modern, futuristic, dystopia, space, academy, virtual reality
+- **Tone** (1-3): comedic, dramatic, dark, wholesome, mysterious, edgy
+- **Style**: second person, sandbox, quest-based, nonlinear, scripted
+- **Custom features**: dicerolls, inventory, companion, questlog, skill checks, player choice
+
+The `tags` command in the bundled CLI lints a tag list against these rules and auto-fixes
+spaces, casing, and special characters.
 
 ### Trending
 Published scenarios can appear in Trending. Based on recent play activity — new plays and
