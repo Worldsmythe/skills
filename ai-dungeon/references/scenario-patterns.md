@@ -176,20 +176,30 @@ NPCs persistent goals, memories, and personality tracking.
 
 ### Community Script Infrastructure
 
-Two open-source scripts by LewdLeah have become standard infrastructure across the
-AI Dungeon creator community:
+Scripts are standard infrastructure for trending scenarios — most include at least one.
+The full catalog (clone links, per-hook notes, install/combine steps, and a compatibility
+matrix) lives in `scripting.md`; the headline ones:
 
-**Auto-Cards** (`github.com/LewdLeah/Auto-Cards`) — detects named entities during play
-and automatically generates/updates story cards. Solves the object-permanence problem
-without manual card authoring. Installable into any scenario.
+- **Inner Self** — persistent NPC minds (memory, goals, secrets). The modern standard;
+  bundles Auto-Cards.
+- **Auto-Cards** — auto-generates story cards ("object permanence"). *Deprecated:
+  superseded by Inner Self, which embeds it.*
+- **FoxTweaks** — config-card plugin bundle (dice, formatting, redundancy, random names,
+  placeholders).
+- **Localized-Languages** — play in ~260 languages.
+- Plus RPG/system scripts (True Auto Stats, CSMS, Ultimate Banking & Inventory), pacing
+  and coherence (Slowburn, Story Arc Engine), and an Inner-Self alternative (MindForge).
+  See `scripting.md` → Script Catalog and Compatibility.
 
-**Inner Self** (`github.com/LewdLeah/Inner-Self`) — gives NPCs persistent inner
-monologue, goals, secrets, and self-reflection. Characters remember events and develop
-over time. Uses a JSON identity system per character.
+**Get scripts by cloning the canonical repo, never by recreating them.** For installing
+and combining, see `scripting.md` → "Installing and Combining Scripts."
 
-As of mid-2026, the majority of trending scenarios include one or both. The `[IS🎭]` and
-`[🎴]` title tags mean "Inner Self enabled" and "Auto-Cards enabled." Treat them as common
-options when a scenario needs dynamic cards or persistent NPC state.
+**Crediting scripts:** creators advertise enabled scripts with emoji markers — `[IS🎭]`/`🎭`
+(Inner Self), `[🎴]`/`⭐️` (Auto-Cards), `[🦊]` (FoxTweaks) — in the scenario **title and/or
+description**, usually with author credit ("Inner Self by LewdLeah"); some also drop
+`inner self`/`auto cards` into the tag list. It's a discovery/credit signal on the
+*scenario* — **not** something you put on story cards, and not a technical/compatibility
+requirement.
 
 ---
 

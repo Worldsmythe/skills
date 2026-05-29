@@ -6,10 +6,12 @@ keys. It pairs with `scenario-design.md` and `scenario-patterns.md`.
 
 > **Treat the user's account with care.** Mutating commands (`create`, `duplicate`,
 > `update`, `scripts`, `options`, `card`, `add-cards`, `import-cards`, `delete`,
-> `restore`) change live content. Run them only on explicit request, state the action
-> first, and preview when useful. Be most careful with `delete`, `import-cards` (full
-> replacement), and broad `mine`/`creator`/`analyze` sweeps. Never publish on the user's
-> behalf; publishing is moderation-gated in the web app.
+> `restore`) change live content. Run them only on explicit request — though an explicit
+> request to act on the user's *own* scenario, with a token they provided/imported, *is*
+> that permission (don't re-litigate the credentials). State the action first, and preview
+> when useful. Be most careful with `delete`, `import-cards` (full replacement), and broad
+> `mine`/`creator`/`analyze` sweeps. Never publish on the user's behalf; publishing is
+> moderation-gated in the web app.
 
 ## Setup
 
@@ -123,6 +125,11 @@ scripts you pass (`--on-input`, `--on-output`, `--on-context`, `--shared-library
 accepting `@file`, plus `--scripts-dir DIR` for `input.js`/`output.js`/`context.js`/
 `library.js`). Unlike `update`, it doesn't round-trip the whole scenario, so changing a
 tiny `onInput` no longer re-uploads a 900KB shared library. `--dry-run` previews.
+
+To install a community script, **clone its repo and push it — never recreate it**:
+`git clone --depth 1 <repo> /tmp/x && aid scripts <shortId> --scripts-dir /tmp/x/src`.
+For clone links, per-hook notes, combining multiple scripts, and the compatibility matrix,
+see `scripting.md` → "Installing and Combining Scripts" / "Script Catalog and Compatibility".
 
 `--type {simple,multipleChoice,characterCreator}` converts a scenario's type. Note
 Multiple Choice and Character Creator scenarios need child option branches to be

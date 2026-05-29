@@ -75,8 +75,11 @@ The CLI authenticates as the user. Treat public reads very differently from comm
 touch live content: `create`, `duplicate`, `update`, `scripts`, `options`, `card`,
 `add-cards`, `import-cards`, `delete`, `restore`.
 
-- Mutate only with clear, specific permission. State the action first, preview when useful,
-  and do not reflexively pass `--yes`.
+- Mutate only with clear, specific permission — but an explicit request to act on the
+  user's **own** scenario, with a token they provided or imported, *is* that permission:
+  proceed, don't re-litigate the credentials. State the action first, preview when useful,
+  and do not reflexively pass `--yes`. Reserve hesitation for destructive ops and
+  unprompted/ambiguous actions.
 - Be especially careful with `delete`, `import-cards` (replaces the whole card set), and
   `add-cards` (writes multiple cards).
 - Never publish on the user's behalf. Publishing is moderation-gated in the web app.
@@ -134,6 +137,9 @@ structure.
 - Story Card Name, Type, Triggers, and Notes are not AI-visible during play.
   The Entry is what gets injected.
 - Repeat the subject name inside every Story Card Entry.
+- Story Cards are world reference (people, places, factions, items, lore) surfaced when
+  triggered — not adventure hooks or premise. Hooks/premise go in the Opening and Plot
+  Essentials.
 - Trigger matching is case-insensitive substring matching. Short/common triggers
   need space or punctuation guards to avoid false positives.
 - AI-written trigger words usually activate cards on the next turn, not the
@@ -143,6 +149,9 @@ structure.
 - Story Summary and Memory Bank are automated persistence systems, but stale Plot
   Essentials and verbose cards can still pull the story off course.
 - Edit + Continue is usually a better correction loop than repeated retries.
+- Install community scripts by cloning the canonical repo (see `references/scripting.md`),
+  never by recreating them or hand-editing the live scripts. Script emoji-markers
+  (`[IS🎭]`, `[🎴]`, `[🦊]`) go in the scenario title/description as credit, never on cards.
 
 ## Action Modes
 

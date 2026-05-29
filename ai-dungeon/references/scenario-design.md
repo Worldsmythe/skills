@@ -413,6 +413,15 @@ scripting API and the web UI — same data, two names. **Repeat the subject's na
 the `value`**: the AI sees the entry text but not the `title`, so a card titled "Elena"
 whose value starts with "She is…" gives the AI no anchor.
 
+**What belongs in a card — world reference, not plot.** Card entries describe *what
+exists*: people, places, factions, races, classes, items, lore, recurring events — surfaced
+only when their keys are mentioned. In real card-bibles the entries are uniformly
+encyclopedic (Faerûn's `drow` race and the `Bregan D'aerthe` mercenary company; Star Wars
+planets; Fiomar's classes/races). They are **not** adventure hooks, quest setups, or premise
+("an unexpected encounter at work", "late-night spirals") — that belongs in the prompt and
+Plot Essentials. Quick test: if it reads like a wiki entry that fires on a keyword, it's a
+card; if it's a situation you want the story to start from or move toward, it isn't.
+
 For the full GraphQL type (including `updatedAt`, `deletedAt`, `factionName`) see
 `graphql-api.md` → "StoryCard Object". For the markdown authoring format and JSON↔markdown
 conversion, see `cli.md` → the `convert` command.
@@ -515,6 +524,13 @@ engagement boost ranking.
 The scenario Description is player-facing only; the AI never sees it. Treat it as a short
 pitch first, then put features, credits, scripts used, card counts, and version notes below
 the fold. Tags cover genre, theme, and mood for search.
+
+**Script-enabled markers.** Creators advertise enabled scripts with emoji markers — `[IS🎭]`
+(Inner Self), `[🎴]` (Auto-Cards), `[🦊]` (FoxTweaks) — in the **title and/or description**,
+typically with author credit ("Inner Self by LewdLeah"); some also add `inner self`/`auto
+cards` to the tag list. They're a discovery/credit signal, **not** something that goes on
+story cards and not a technical requirement. (Tags themselves are alphanumeric-only, so the
+emoji form lives in the title/description, not the tag field.)
 
 ### Updating Published Scenarios
 Changes apply immediately. Existing adventures keep their state; new adventures use the
