@@ -217,9 +217,24 @@ alternative state. Use it to clear a pile of retries off a message before you co
 retry without the previous tries in context. For reshaping *where* the story
 goes, Edit + Continue (above) is the precise tool.
 
+### Markdown Headers for Narrative Control
+
+Markdown headers (`##`, `###`) are a powerful tool for controlling the narrative flow. 
+These are present heavily in AI training data, which means that they can be used to
+direct what happens next. These originate from headers. `##` is an H2, usually a
+heading that's not the main heading but normally denotes a chapter break, or similar
+structure. `###` is an H3, usually a subheading or section heading.
+
+One way the AI might interpret these is to say `## [stuff that happens in the next chapter]`
+or `### [stuff that happens in the next section]`, which is stronger narrative
+guidance than regular Story/Do/Say actions.
+
+### Overusing Do/Say on Older Models
+
 Overusing Do/Say creates a repetitive `> You...` pattern that the AI mirrors. Mix in Story
 mode for narrative beats, scene-setting, and other characters' actions. Start a Do with
-quoted dialogue or "My..." to bypass the auto-prepending.
+quoted dialogue or "My..." to bypass the auto-prepending. This is mostly a problem
+on older, smaller models.
 
 ---
 
