@@ -208,7 +208,14 @@ If the AI goes in a wrong direction, don't just Retry and hope for better luck. 
 the problematic text to what you want, then **Continue**. This is more reliable than
 retrying because you've reshaped the context the AI is continuing from.
 
-### Action Mode Mixing
+### The `/reset` Command
+
+`/reset` is a built-in command you type into the action input. It's handled by the client —
+the input clears the moment you enter it (it isn't sent as an action) — and it removes the
+retry counter from the previous message, dropping that response's accumulated retry/
+alternative state. Use it to clear a pile of retries off a message before you continue or
+retry without the previous tries in context. For reshaping *where* the story
+goes, Edit + Continue (above) is the precise tool.
 
 Overusing Do/Say creates a repetitive `> You...` pattern that the AI mirrors. Mix in Story
 mode for narrative beats, scene-setting, and other characters' actions. Start a Do with
