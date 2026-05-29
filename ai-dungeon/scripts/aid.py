@@ -23,6 +23,7 @@ Usage:
 
   aid popular --limit 10                       # all-time popular
   aid popular --sfw --days 30                  # top SFW of last month
+  aid popular --tag romance fantasy            # popular scenarios tagged BOTH
   aid analyze popular --deep                   # aggregate analysis w/ card counts
 
   aid details <shortId>     # scenario details + plot components
@@ -73,6 +74,11 @@ except ImportError:
 # ─── Firebase Config ─────────────────────────────────────────────────────────
 # Extracted from play.aidungeon.com env
 FIREBASE_API_KEY = "AIzaSyCnvo_XFPmAabrDkOKBRpbivp5UH8r_3mg"
+FIREBASE_PROJECT = "aidungeon-2c6cc"
+# A valid AI Dungeon id token carries this issuer. Checking it on import catches a
+# token that's been truncated or mangled (e.g. markdown formatting applied to the
+# pasted text) even when the payload still happens to base64-decode.
+EXPECTED_ISSUER = f"https://securetoken.google.com/{FIREBASE_PROJECT}"
 FIREBASE_TOKEN_URL = f"https://securetoken.googleapis.com/v1/token?key={FIREBASE_API_KEY}"
 # The Firebase API key is HTTP-referer restricted; refreshes without a matching
 # Referer header are rejected ("Requests from referer <empty> are blocked").
@@ -774,6 +780,8 @@ def apply_search_filters(fields, args, default_time=None):
         fields["timeRange"] = str(time_range)
     elif "timeRange" in fields:
         del fields["timeRange"]
+    if getattr(args, "tag", None):
+        fields["tags"] = [t.strip().lower() for t in args.tag]
     if getattr(args, "filters", None):
         for f in args.filters:
             k, _, v = f.partition("=")
@@ -800,6 +808,8 @@ def add_search_filter_args(p, with_days=True):
                    help="Drop scenarios by these creators (case-insensitive)")
     p.add_argument("--no-official", action="store_true", dest="no_official",
                    help=f"Drop platform-official accounts ({', '.join(sorted(OFFICIAL_CREATORS))})")
+    p.add_argument("--tag", nargs="+", metavar="TAG",
+                   help="Only scenarios carrying ALL these tags (lowercased; server-side filter)")
 
 
 def add_view_flag(p):
@@ -2088,7 +2098,18 @@ def cmd_token_import(args):
 
     payload = decode_jwt_payload(raw)
     if not payload or "exp" not in payload:
-        print("  ✗ Invalid JWT — couldn't decode payload", file=sys.stderr)
+        print("  ✗ Invalid JWT — couldn't decode payload.", file=sys.stderr)
+        print("    The token may be truncated or mangled (e.g. markdown formatting applied "
+              "to the text). Re-copy the raw token.", file=sys.stderr)
+        sys.exit(1)
+
+    issuer = payload.get("iss")
+    if issuer != EXPECTED_ISSUER:
+        print(f"  ✗ Token issuer doesn't match AI Dungeon.", file=sys.stderr)
+        print(f"    expected: {EXPECTED_ISSUER}", file=sys.stderr)
+        print(f"    got:      {issuer or '(none)'}", file=sys.stderr)
+        print(f"    The token is likely mangled (markdown/whitespace) or from another "
+              f"project — re-copy the raw token.", file=sys.stderr)
         sys.exit(1)
 
     exp_epoch = payload["exp"]

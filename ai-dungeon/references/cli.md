@@ -32,6 +32,11 @@ aid token status                                 # check expiry
 
 Or for a one-off, set `AID_TOKEN='firebase <jwt>'` in the environment, or pass `--token`.
 
+`token import` validates the JWT before saving — it must decode and carry AI Dungeon's
+issuer (`https://securetoken.google.com/aidungeon-2c6cc`). A token that's been truncated or
+mangled (e.g. markdown formatting applied to the pasted text) is rejected with a re-copy
+hint rather than silently stored.
+
 The token store lives at `~/.config/aid-cli/tokens.json`. Tokens auto-refresh when within
 5 minutes of expiry.
 
@@ -64,6 +69,10 @@ is applied to the fetched page, so raise `--limit` if a filter thins the list to
 The same four commands take rating filters: `--rating everyone teen mature unrated` (any
 combination), or the shortcuts `--sfw` (Everyone+Teen) and `--nsfw` (Mature+Unrated).
 `--rating`/`--sfw`/`--nsfw` are mutually exclusive; default is all ratings.
+
+`--tag TAG…` filters server-side to scenarios carrying **all** the given tags (e.g.
+`aid popular --tag romance fantasy`). Tags are lowercased automatically and matched
+case-sensitively by the API, so pass them as the canonical lowercase form.
 
 `details` now returns the full plot components (Plot Essentials, Author's Note, AI
 Instructions, Story Summary) and classifies the scenario's design pattern (card-bible,
