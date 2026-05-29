@@ -71,6 +71,18 @@ except ImportError:
     requests = None
 
 
+def _invocation():
+    """How this CLI was invoked, for help/usage text: `aid` if installed on PATH,
+    otherwise `python <path-as-run>` so examples are copy-pasteable as-is."""
+    arg0 = sys.argv[0] or "aid.py"
+    if os.path.basename(arg0) in ("aid", "aid.exe"):
+        return "aid"
+    return f"python {arg0}"
+
+
+PROG = _invocation()
+
+
 # ─── Firebase Config ─────────────────────────────────────────────────────────
 # Extracted from play.aidungeon.com env
 FIREBASE_API_KEY = "AIzaSyCnvo_XFPmAabrDkOKBRpbivp5UH8r_3mg"
@@ -91,7 +103,7 @@ TOKEN_STORE = Path.home() / ".config" / "aid-cli" / "tokens.json"
 def require_requests():
     """Return requests, or exit with setup guidance for networked commands."""
     if requests is None:
-        print("aid network commands require 'requests'. Install with: pip install requests", file=sys.stderr)
+        print("Networked commands need 'requests'. Install with: pip install requests", file=sys.stderr)
         sys.exit(1)
     return requests
 
@@ -215,7 +227,7 @@ def resolve_token(args):
     if not store or "id_token" not in store:
         print("  ✗ No token available.", file=sys.stderr)
         print("    Pass one with --token or AID_TOKEN env.", file=sys.stderr)
-        print("    Or import one for auto-refresh: aid token import '<jwt>' [refresh_token]", file=sys.stderr)
+        print(f"    Or import one for auto-refresh: {PROG} token import '<jwt>' [refresh_token]", file=sys.stderr)
         sys.exit(1)
 
     id_token = store["id_token"]
@@ -1318,7 +1330,7 @@ def cmd_cards(args):
     if not cards and count > 0:
         print(f"\n  ⚠ This scenario reports {count} cards but returned none on the root.")
         print(f"    It's almost certainly a Multiple Choice scenario — cards live on the")
-        print(f"    leaf branches, not the root. Use:  aid tree {args.short_id}")
+        print(f"    leaf branches, not the root. Use:  {PROG} tree {args.short_id}")
         print(f"    then query cards on a specific leaf's shortId.\n")
         return
 
@@ -1387,7 +1399,7 @@ def cmd_tree(args):
     root_kids = child_nodes(s, {s.get("id")})
     if not root_kids:
         print(f"\n  '{s['title']}' has no child options — it's a single scenario,")
-        print(f"  not a Multiple Choice tree. Use:  aid details {args.short_id}\n")
+        print(f"  not a Multiple Choice tree. Use:  {PROG} details {args.short_id}\n")
         return
 
     print(f"\n  ╔═══ Branch Tree: {s['title']} ═══╗")
@@ -1397,7 +1409,7 @@ def cmd_tree(args):
     _print_tree(s)
     print(f"\n  ◆ = playable leaf (full plot components active)")
     print(f"  Non-leaf nodes are navigation only — their plot components are ignored.")
-    print(f"  Query any leaf's cards with:  aid cards <shortId>\n")
+    print(f"  Query any leaf's cards with:  {PROG} cards <shortId>\n")
 
 
 def _export_one(token, short_id, view_published=False):
@@ -1600,10 +1612,10 @@ def cmd_options(args):
     print(f"\n  ✓ Created {len(made)} option(s) under '{parent.get('title')}' ({args.short_id})")
     for c in made:
         print(f"    • {c.get('title')}  {c.get('shortId')}")
-    print(f"\n  Edit a branch:  aid update <shortId> --prompt ...")
+    print(f"\n  Edit a branch:  {PROG} update <shortId> --prompt ...")
     if parent.get("type") == "simple":
         print(f"  Parent is still 'simple' — set its type with: "
-              f"aid update {args.short_id} --type multipleChoice\n")
+              f"{PROG} update {args.short_id} --type multipleChoice\n")
     else:
         print()
 
@@ -1663,7 +1675,7 @@ def cmd_card(args):
     card = next((c for c in cards if str(c.get("id")) == str(args.id)), None)
     if not card:
         print(f"  ✗ No story card with id '{args.id}' on this scenario.", file=sys.stderr)
-        print(f"    List ids with:  aid cards {args.short_id} --json", file=sys.stderr)
+        print(f"    List ids with:  {PROG} cards {args.short_id} --json", file=sys.stderr)
         sys.exit(1)
 
     if args.delete:
@@ -1735,7 +1747,7 @@ def cmd_create(args):
         sys.exit(1)
     sc = result.get("scenario") or {}
     print(f"\n  ✓ Created '{sc.get('title') or '(untitled)'}'  ({sc.get('shortId')})")
-    print(f"    Flesh it out:  aid update {sc.get('shortId')} --plot-essentials @pe.md ...\n")
+    print(f"    Flesh it out:  {PROG} update {sc.get('shortId')} --plot-essentials @pe.md ...\n")
 
 
 def cmd_scripts(args):
@@ -1811,7 +1823,7 @@ def cmd_import_cards(args):
     if not args.yes:
         print(f"\n  ⚠ This REPLACES every story card on '{s.get('title')}' ({args.short_id})")
         print(f"    with the {len(cards)} card(s) from {args.file}. The current set is discarded.")
-        print(f"    (To add without discarding, use 'aid add-cards'.)")
+        print(f"    (To add without discarding, use '{PROG} add-cards'.)")
         print(f"    Re-run with --yes to confirm.\n")
         return
 
@@ -2169,7 +2181,7 @@ def cmd_token_status(args):
     # Check stored token
     store = load_token_store()
     if not store or "id_token" not in store:
-        print("  No stored token. Use --token, AID_TOKEN env, or 'aid token import'.", file=sys.stderr)
+        print(f"  No stored token. Use --token, AID_TOKEN env, or '{PROG} token import'.", file=sys.stderr)
         sys.exit(1)
 
     id_token = store["id_token"]
@@ -2268,14 +2280,14 @@ EXTRACT_HELP = """\
 
 def cmd_token_extract(args):
     """Print instructions for extracting tokens from browser."""
-    print(EXTRACT_HELP)
+    print(EXTRACT_HELP.replace("aid token import", f"{PROG} token import"))
 
 
 def cmd_token_force_refresh(args):
     """Force a token refresh now."""
     store = load_token_store()
     if not store or not store.get("refresh_token"):
-        print("  ✗ No refresh token stored. Use 'aid token import' with a refresh token.", file=sys.stderr)
+        print(f"  ✗ No refresh token stored. Use '{PROG} token import' with a refresh token.", file=sys.stderr)
         sys.exit(1)
 
     print("  ↻ Forcing token refresh...", file=sys.stderr)
@@ -2298,9 +2310,10 @@ def cmd_token_force_refresh(args):
 
 def main():
     parser = argparse.ArgumentParser(
+        prog=PROG,
         description="AI Dungeon GraphQL CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__,
+        epilog=__doc__.replace("aid ", f"{PROG} "),
     )
     parser.add_argument("--token", help="Firebase JWT (overrides stored token)")
     parser.add_argument("--json", action="store_true", help="Raw JSON output")
@@ -2378,7 +2391,7 @@ def main():
                           help="Content rating")
     p_update.add_argument("--type", dest="scenario_type", choices=SCENARIO_TYPES,
                           help="Convert scenario type (multipleChoice/characterCreator "
-                               "need child options — see 'aid options')")
+                               f"need child options — see '{PROG} options')")
     p_update.add_argument("--third-person", action=argparse.BooleanOptionalAction,
                           default=None, dest="third_person", help="Third-person perspective")
     p_update.add_argument("--allow-comments", action=argparse.BooleanOptionalAction,
@@ -2443,7 +2456,7 @@ def main():
         "card",
         help="Create, edit, or delete one story card (surgical — avoids the full-scenario payload)")
     p_card.add_argument("short_id", help="Scenario shortId")
-    p_card.add_argument("--id", help="Card id to edit/delete (see 'aid cards <shortId> --json'); "
+    p_card.add_argument("--id", help=f"Card id to edit/delete (see '{PROG} cards <shortId> --json'); "
                                      "omit to create a new card")
     p_card.add_argument("--title", help="Card title")
     p_card.add_argument("--type", dest="card_type", help="Card type (character, location, race, class, …)")
