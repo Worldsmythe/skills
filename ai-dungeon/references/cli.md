@@ -6,7 +6,7 @@ keys. It pairs with `scenario-design.md` and `scenario-patterns.md`.
 
 > **Treat the user's account with care.** Mutating commands (`create`, `duplicate`,
 > `update`, `scripts`, `options`, `card`, `add-cards`, `import-cards`, `delete`,
-> `restore`) change live content. Run them only on explicit request — though an explicit
+> `restore`, `mc sync`) change live content. Run them only on explicit request — though an explicit
 > request to act on the user's *own* scenario, with a token they provided/imported, *is*
 > that permission (don't re-litigate the credentials). State the action first, and preview
 > when useful. Be most careful with `delete`, `import-cards` (full replacement), and broad
@@ -196,6 +196,66 @@ so without `--yes` it only previews what would go; pass `--yes` to actually dele
 Deletes are soft (the API marks `deletedAt`), and `tree`/`export` filter those nodes
 out, so a deleted branch stops showing up immediately. Because it's soft,
 `aid restore <shortId>` undoes it (clears `deletedAt`).
+
+### Build a Multiple Choice tree from one file (`mc`)
+
+| Command | What it does |
+|---------|-------------|
+| `aid mc build <spec.json>` | Compile a layered spec into the full per-leaf tree (offline) |
+| `aid mc build <spec.json> --out DIR` | Same, and write each leaf's setup+cards as export files |
+| `aid mc sync <spec.json> [--scenario <shortId>] --yes` | Create/update that tree on your account |
+| `aid mc sync <spec.json> --prune --yes` | Also delete live branches not in the spec |
+
+`mc` solves the layered Multiple Choice problem: AID branches **don't inherit**, and only
+the leaf affects play, so a "context → species → era, each adds cards + plot essentials"
+design has to physically carry every choice on each leaf. You author the layers once; `mc`
+compiles them by walking every root→leaf path and baking the accumulated content into the
+leaf.
+
+The spec is a single JSON file (working example: `assets/mc-layers/worlds.spec.json`):
+
+```json
+{
+  "title": "Layered Worlds",
+  "description": "...", "tags": ["fantasy"], "rating": "teen",
+  "leaf": { "type": "simple", "prompt": "...", "aiInstructions": "...",
+            "plotEssentials": "", "cards": [] },
+  "layers": [
+    { "name": "setting", "prompt": "Choose your world.",
+      "options": [
+        { "title": "Cyberpunk", "plotEssentials": "Neon megacity...",
+          "authorsNote": "Tone: noir.",
+          "cards": [ { "title": "The Corps", "type": "faction", "value": "..." } ] },
+        { "title": "High Fantasy", "plotEssentials": "...", "cards": [] }
+      ] },
+    { "name": "species", "prompt": "Choose your species.", "options": [ ... ] },
+    { "name": "era", "prompt": "Choose an era.", "options": [ ... ] }
+  ]
+}
+```
+
+Each layer is one choice level; each option carries a *delta*. Leaf count is the product of
+the per-layer option counts (3 layers of 2 = 8 leaves). Per leaf:
+
+- **Text** (`plotEssentials`, `authorsNote`, `aiInstructions`, `prompt`) concatenates: the
+  `leaf` base first, then each chosen option in path order (broad → specific), joined by
+  blank lines. Empty fragments are skipped.
+- **Cards** (inline `cards` and/or a `cardsFile` path relative to the spec) union across the
+  path, deduped by title — a deeper layer's same-titled card wins, so a layer can override a
+  shared card. Keys auto-generate from the title when omitted.
+
+`mc build` is offline (no token): it prints the tree with per-leaf card/PE sizes so you can
+see exactly what each leaf will contain, and `--out DIR` writes the compiled leaves as
+export-style `*.setup.json` / `*.cards.json` (named by branch path) for inspection.
+
+`mc sync` writes it to AID. Without `--scenario` it creates a new root scenario; with one it
+syncs into an existing tree. It's **idempotent** — branches are matched by title at each
+level, so re-running after a spec edit updates in place instead of duplicating. Each node is
+written with one fork-safe `updateScenario` (menu nodes become `multipleChoice`; leaves get
+the compiled setup with cards baked into the same payload, reusing existing card ids on
+title match). `--prune` deletes live branches absent from the spec. Like the other mutating
+commands it previews unless you pass `--yes` (and the preview is offline — no token needed
+until you apply).
 
 ### Multiple Choice Inspection (needs token)
 

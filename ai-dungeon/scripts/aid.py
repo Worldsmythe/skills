@@ -45,6 +45,9 @@ Usage:
   aid delete <shortId> --yes                                     # delete a scenario/branch you own
   aid restore <shortId>                                          # undo a delete
 
+  aid mc build worlds.json                                       # compile a layered MC tree (offline)
+  aid mc sync worlds.json --yes                                  # build/update that tree on your account
+
   aid keys "elf"                      # generate trigger keys for a word
   aid convert cards.json              # convert cards JSON <-> markdown
   aid tags fantasy romance darkhumor  # lint tags against AID rules
@@ -1062,6 +1065,193 @@ def _diff_preview(val, width=70):
     return s
 
 
+# ─── Multiple Choice Layer Builder ───────────────────────────────────────────
+# Build a Multiple Choice tree from a single layered spec. AID's MC tree gives
+# non-leaf nodes zero effect on play and zero inheritance to children, so a
+# "each layer adds cards + plot essentials" model only works if every accumulated
+# choice is baked into each leaf. These helpers compile the layers into the full
+# per-leaf content; `mc sync` then writes that tree to AID.
+
+def normalize_card(c):
+    """One story card in import shape, with keys auto-built from the title if absent."""
+    title = c.get("title") or ""
+    return {
+        "keys": c.get("keys") or build_keys("", title),
+        "value": c.get("value") or c.get("entry") or "",
+        "type": c.get("type") or "character",
+        "title": title,
+        "description": c.get("description") or "",
+        "useForCharacterCreation": bool(c.get("useForCharacterCreation")),
+    }
+
+
+def merge_text(parts):
+    """Join non-empty text fragments with blank lines, in order (broad → specific)."""
+    return "\n\n".join(p.strip() for p in parts if p and p.strip())
+
+
+def merge_cards(card_lists):
+    """Union story cards across layers, deduped by title (later layers win); order kept."""
+    out = []
+    index = {}
+    for cards in card_lists:
+        for c in cards:
+            key = (c.get("title") or "").strip().lower()
+            if key and key in index:
+                out[index[key]] = c
+            else:
+                if key:
+                    index[key] = len(out)
+                out.append(c)
+    return out
+
+
+def spec_cards(node, spec_dir):
+    """Resolve a spec node's cards: inline `cards` plus an optional `cardsFile` (relative
+    to the spec file). load_cards_file already normalizes, so wrap inline cards to match."""
+    cards = [normalize_card(c) for c in (node.get("cards") or [])]
+    cf = node.get("cardsFile")
+    if cf:
+        cards += load_cards_file(str(spec_dir / cf))
+    return cards
+
+
+def load_spec(path):
+    """Load and lightly validate a layer spec. Returns (spec, spec_dir)."""
+    p = Path(path)
+    if not p.exists():
+        print(f"  ✗ Spec not found: {path}", file=sys.stderr)
+        sys.exit(1)
+    try:
+        spec = json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        print(f"  ✗ Spec isn't valid JSON: {e}", file=sys.stderr)
+        sys.exit(1)
+    layers = spec.get("layers")
+    if not layers or not isinstance(layers, list):
+        print("  ✗ Spec needs a non-empty 'layers' array.", file=sys.stderr)
+        sys.exit(1)
+    for i, layer in enumerate(layers):
+        if not layer.get("options"):
+            print(f"  ✗ Layer {i} ('{layer.get('name', i)}') has no options.", file=sys.stderr)
+            sys.exit(1)
+    return spec, p.parent
+
+
+def compile_leaf(spec, chosen, spec_dir):
+    """Compile one accumulated root→leaf path of chosen options into a leaf's setup + cards.
+    Text fields concatenate (base, then each option in path order); cards union."""
+    leaf = spec.get("leaf") or {}
+    setup = {
+        "type": leaf.get("type") or "simple",
+        "prompt": merge_text([leaf.get("prompt", "")] + [o.get("prompt", "") for o in chosen]),
+        "plotEssentials": merge_text([leaf.get("plotEssentials", "")] + [o.get("plotEssentials", "") for o in chosen]),
+        "authorsNote": merge_text([leaf.get("authorsNote", "")] + [o.get("authorsNote", "") for o in chosen]),
+        "aiInstructions": merge_text([leaf.get("aiInstructions", "")] + [o.get("aiInstructions", "") for o in chosen]),
+    }
+    cards = merge_cards([spec_cards(leaf, spec_dir)] + [spec_cards(o, spec_dir) for o in chosen])
+    return setup, cards
+
+
+def build_tree_plan(spec, spec_dir):
+    """Expand the layered spec into a full branch-tree plan (root node returned).
+
+    Every root→leaf path is a distinct combination of one option per layer; the leaf
+    carries the union of all chosen options' cards and the concatenation of their text.
+    Internal nodes are navigation menus framed by their layer's prompt.
+    """
+    layers = spec["layers"]
+
+    def rec(depth, chosen):
+        if depth == len(layers):
+            setup, cards = compile_leaf(spec, chosen, spec_dir)
+            return {"leaf": True, "setup": setup, "cards": cards}
+        layer = layers[depth]
+        node = {"leaf": False, "prompt": layer.get("prompt", ""),
+                "layer": layer.get("name") or f"layer{depth}", "children": []}
+        for opt in layer["options"]:
+            child = rec(depth + 1, chosen + [opt])
+            child["title"] = opt.get("title") or "(untitled)"
+            node["children"].append(child)
+        return node
+
+    root = rec(0, [])
+    root["title"] = spec.get("title") or "Untitled"
+    return root
+
+
+def plan_stats(node):
+    """(menu_nodes, leaves, total_cards) over a compiled plan."""
+    if node.get("leaf"):
+        return 0, 1, len(node.get("cards") or [])
+    ni, nl, nc = 1, 0, 0
+    for child in node["children"]:
+        a, b, c = plan_stats(child)
+        ni += a
+        nl += b
+        nc += c
+    return ni, nl, nc
+
+
+def print_plan(node, prefix="", is_last=True, depth=0):
+    """Render the compiled plan as a tree, with per-leaf card/PE sizes."""
+    if depth == 0:
+        ni, nl, nc = plan_stats(node)
+        print(f"\n  {node['title']}  (root menu)")
+        print(f"      {nl} leaves  |  {ni} menu nodes  |  {nc} cards across leaves")
+        kids = node["children"]
+        for i, child in enumerate(kids):
+            print_plan(child, "  ", i == len(kids) - 1, depth + 1)
+        return
+    connector = "└─ " if is_last else "├─ "
+    if node.get("leaf"):
+        pe = len(node["setup"]["plotEssentials"])
+        nc = len(node.get("cards") or [])
+        print(f"  {prefix}{connector}{node['title']}  ◆ leaf  [{nc} cards, {pe} PE chars]")
+    else:
+        print(f"  {prefix}{connector}{node['title']}  (menu)")
+        child_prefix = prefix + ("   " if is_last else "│  ")
+        kids = node["children"]
+        for i, child in enumerate(kids):
+            print_plan(child, child_prefix, i == len(kids) - 1, depth + 1)
+
+
+def write_plan_export(node, out_dir):
+    """Write the compiled plan as an export-style directory (one setup+cards per leaf)."""
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    used = set()
+
+    def unique(name):
+        base = name or "leaf"
+        n = base
+        i = 2
+        while n in used:
+            n = f"{base}-{i}"
+            i += 1
+        used.add(n)
+        return n
+
+    written = []
+
+    def walk(n, path):
+        if n.get("leaf"):
+            name = unique(slugify("__".join(path) or n.get("title") or "leaf"))
+            (out / f"{name}.setup.json").write_text(
+                json.dumps(n["setup"], indent=2, ensure_ascii=False), encoding="utf-8")
+            written.append(f"{name}.setup.json")
+            if n.get("cards"):
+                (out / f"{name}.cards.json").write_text(
+                    json.dumps(n["cards"], indent=2, ensure_ascii=False), encoding="utf-8")
+                written.append(f"{name}.cards.json")
+            return
+        for child in n["children"]:
+            walk(child, path + [child["title"]])
+
+    walk(node, [])
+    return out, written
+
+
 def print_items(items, show_tags=True, show_status=False):
     if not items:
         print("  (no results)")
@@ -1618,6 +1808,193 @@ def cmd_options(args):
               f"{PROG} update {args.short_id} --type multipleChoice\n")
     else:
         print()
+
+
+def cmd_mc_build(args):
+    spec, spec_dir = load_spec(args.spec)
+    plan = build_tree_plan(spec, spec_dir)
+    ni, nl, nc = plan_stats(plan)
+    print_plan(plan)
+    if args.out:
+        out, written = write_plan_export(plan, args.out)
+        print(f"\n  ✓ Wrote {len(written)} file(s) → {out}/")
+    print(f"\n  {nl} playable leaves, each self-contained (layers baked in — AID branches")
+    print(f"  don't inherit, so every choice on the path lives on the leaf).")
+    print(f"  Push it with:  {PROG} mc sync {args.spec} [--scenario <shortId>] --yes\n")
+
+
+# Direct child branches of a scenario, for matching the plan against the live tree.
+MC_CHILDREN_QUERY = """\
+query GetScenarioChildren($shortId: String) {
+  scenario(shortId: $shortId, viewPublished: false) {
+    id shortId title type
+    options { id shortId title type deletedAt }
+  }
+}"""
+
+
+def fetch_children(token, short_id):
+    """Live (non-deleted) direct child branches of a scenario."""
+    s = gql(token, MC_CHILDREN_QUERY, {"shortId": short_id},
+            op_name="GetScenarioChildren")["scenario"]
+    return [c for c in (s.get("options") or []) if not c.get("deletedAt")]
+
+
+def build_leaf_cards(compiled, existing):
+    """Story-card list for a leaf's full update: reuse id/updatedAt for title-matches,
+    mint ids for new cards. Replaces the leaf's whole set so repeated syncs converge."""
+    by_title = {}
+    for c in existing:
+        t = (c.get("title") or "").strip().lower()
+        if t:
+            by_title.setdefault(t, c)
+    seen_ids = {c["id"] for c in existing if c.get("id")}
+    out = []
+    for c in compiled:
+        card = {
+            "keys": c["keys"], "value": c["value"], "type": c["type"],
+            "title": c["title"], "description": c["description"],
+            "useForCharacterCreation": c["useForCharacterCreation"],
+        }
+        prev = by_title.get((c["title"] or "").strip().lower())
+        if prev and prev.get("id"):
+            card["id"] = prev["id"]
+            if prev.get("updatedAt") is not None:
+                card["updatedAt"] = prev["updatedAt"]
+        else:
+            cid = new_card_id(seen_ids)
+            seen_ids.add(cid)
+            card["id"] = cid
+        out.append(card)
+    return out
+
+
+def push_node(token, short_id, node):
+    """Write one plan node to its scenario via a full updateScenario (read-modify-write,
+    fork-safe). Internal nodes become multipleChoice menus; leaves get the compiled
+    setup + baked-in card set."""
+    s = gql(token, SCENARIO_EDIT_QUERY, {"shortId": short_id, "viewPublished": False},
+            op_name="GetScenarioForEdit")["scenario"]
+    inp = build_scenario_update_input(s)
+    det = inp["details"]
+    inp["title"] = node["title"]
+
+    if node.get("leaf"):
+        setup = node["setup"]
+        inp["type"] = det["type"] = setup.get("type") or "simple"
+        det["prompt"] = setup["prompt"]
+        det["plotEssentials"] = setup["plotEssentials"]
+        det["authorsNote"] = setup["authorsNote"]
+        if setup.get("aiInstructions"):
+            instr = dict(det.get("instructions") or {})
+            instr["scenario"] = setup["aiInstructions"]
+            det["instructions"] = instr
+        det["storyCards"] = build_leaf_cards(node.get("cards") or [], det.get("storyCards") or [])
+    else:
+        inp["type"] = det["type"] = "multipleChoice"
+        det["prompt"] = node["prompt"]
+
+    result = gql(token, UPDATE_SCENARIO_MUTATION, {"input": inp},
+                 op_name="UpdateScenario")["updateScenario"]
+    if not result.get("success"):
+        print(f"  ⚠ update '{node['title']}' ({short_id}) failed: {result.get('message')}",
+              file=sys.stderr)
+    return result.get("success")
+
+
+def sync_walk(token, short_id, node, prune, counts):
+    """Recursively write the plan to AID, matching existing branches by title (idempotent)."""
+    push_node(token, short_id, node)
+    counts["updated"] += 1
+    if node.get("leaf"):
+        counts["leaves"] += 1
+        return
+
+    existing = fetch_children(token, short_id)
+    by_title = {c["title"]: c for c in existing}
+
+    missing = [child for child in node["children"] if child["title"] not in by_title]
+    new_sids = []
+    if missing:
+        result = gql(token, CREATE_OPTIONS_MUTATION,
+                     {"shortId": short_id, "count": len(missing), "title": None},
+                     op_name="CreateScenarioOptions")["createScenarioOptions"]
+        if not result.get("success"):
+            print(f"  ✗ Couldn't create {len(missing)} option(s) under {short_id}: "
+                  f"{result.get('message')}", file=sys.stderr)
+            sys.exit(1)
+        new_sids = [sc["shortId"] for sc in (result.get("scenarios") or [])]
+        counts["created"] += len(new_sids)
+
+    mi = 0
+    for child in node["children"]:
+        if child["title"] in by_title:
+            csid = by_title[child["title"]]["shortId"]
+        else:
+            csid = new_sids[mi]
+            mi += 1
+        sync_walk(token, csid, child, prune, counts)
+
+    if prune:
+        keep = {child["title"] for child in node["children"]}
+        for c in existing:
+            if c["title"] not in keep:
+                gql(token, DELETE_SCENARIO_MUTATION, {"shortId": c["shortId"]},
+                    op_name="MainMenuViewDeleteScenario")
+                counts["pruned"] += 1
+
+
+def cmd_mc_sync(args):
+    spec, spec_dir = load_spec(args.spec)
+    plan = build_tree_plan(spec, spec_dir)
+    ni, nl, nc = plan_stats(plan)
+
+    target = args.scenario or "(new scenario)"
+    print(f"\n  ╔═══ MC sync: {plan['title']} ═══╗")
+    print(f"  ║  target: {target}")
+    print(f"  ║  {nl} leaves  |  {ni} menu nodes  |  {nc} cards across leaves")
+    if args.prune:
+        print(f"  ║  --prune: existing branches not in the spec will be deleted")
+    print(f"  ╚{'═' * 44}")
+    print_plan(plan)
+
+    if not args.yes:
+        verb = "update" if args.scenario else "create a new scenario, then build"
+        print(f"\n  This will {verb} {ni} menu node(s) and {nl} leaf branch(es) on your account.")
+        print(f"  Re-run with --yes to apply.\n")
+        return
+
+    token = resolve_token(args)
+    if args.scenario:
+        require_owned(token, args.scenario)
+        root_sid = args.scenario
+    else:
+        inp = {"title": plan["title"], "details": {"prompt": plan.get("prompt") or ""}}
+        if spec.get("description") is not None:
+            inp["description"] = spec["description"]
+        if spec.get("tags"):
+            cleaned, issues = lint_tags(spec["tags"])
+            for issue in issues:
+                print(f"  {issue}", file=sys.stderr)
+            inp["tags"] = cleaned
+        if spec.get("rating"):
+            inp["contentRating"] = RATING_MAP[spec["rating"]]
+        created = gql(token, CREATE_SCENARIO_MUTATION, {"input": inp},
+                      op_name="NewMenuCreateScenario")["createScenario"]
+        if not created.get("success"):
+            print(f"\n  ✗ {created.get('message') or 'createScenario failed'}\n", file=sys.stderr)
+            sys.exit(1)
+        root_sid = (created.get("scenario") or {}).get("shortId")
+        print(f"  ✓ Created root scenario {root_sid}")
+
+    counts = {"updated": 0, "created": 0, "pruned": 0, "leaves": 0}
+    sync_walk(token, root_sid, plan, args.prune, counts)
+
+    print(f"\n  ✓ Synced '{plan['title']}' → {root_sid}")
+    pruned = f", {counts['pruned']} pruned" if args.prune else ""
+    print(f"    {counts['updated']} node(s) written, {counts['created']} branch(es) created, "
+          f"{counts['leaves']} leaf(s){pruned}")
+    print(f"    Inspect:  {PROG} tree {root_sid}\n")
 
 
 def cmd_card(args):
@@ -2451,6 +2828,35 @@ def main():
     p_options.add_argument("--count", type=int, default=2, help="How many options to create (default: 2)")
     p_options.add_argument("--title", help="Title prefix for the created options")
     p_options.set_defaults(func=cmd_options)
+
+    p_mc = sub.add_parser(
+        "mc",
+        help="Build a Multiple Choice tree from a single layered spec file")
+    mc_sub = p_mc.add_subparsers(dest="mc_command", required=True)
+
+    p_mc_build = mc_sub.add_parser(
+        "build",
+        help="Compile a layer spec into the full per-leaf tree (offline; no network)",
+        description="Expand a layered spec (context → species → era …) into every "
+                    "root→leaf combination, baking each path's accumulated cards and "
+                    "plot components into the leaf, since AID branches don't inherit.")
+    p_mc_build.add_argument("spec", help="Layer spec JSON file")
+    p_mc_build.add_argument("--out", help="Also write the compiled tree as an export-style dir")
+    p_mc_build.set_defaults(func=cmd_mc_build)
+
+    p_mc_sync = mc_sub.add_parser(
+        "sync",
+        help="Create/update the MC tree on your account from a layer spec (needs --yes)",
+        description="Walk the compiled plan against AID: create or match branches by "
+                    "title (idempotent re-sync), then write each node with one "
+                    "fork-safe updateScenario.")
+    p_mc_sync.add_argument("spec", help="Layer spec JSON file")
+    p_mc_sync.add_argument("--scenario", help="Existing root shortId to sync into (omit to create new)")
+    p_mc_sync.add_argument("--prune", action="store_true",
+                           help="Delete existing branches not present in the spec")
+    p_mc_sync.add_argument("--yes", action="store_true",
+                           help="Apply — without it, just previews the plan")
+    p_mc_sync.set_defaults(func=cmd_mc_sync)
 
     p_card = sub.add_parser(
         "card",
