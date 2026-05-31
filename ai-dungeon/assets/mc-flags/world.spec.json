@@ -1,0 +1,62 @@
+{
+  "title": "Aethel: Layered Start",
+  "description": "A 4-layer Multiple Choice scenario showing the flag system: context size and race set flags that the age and start layers consume to decide which lore cards (and at what detail) each leaf carries.",
+  "tags": ["fantasy", "character creation", "lore"],
+  "rating": "teen",
+  "leaf": {
+    "type": "simple",
+    "prompt": "You wake at the edge of the Aethel Wood with the day ahead of you and no one to answer to.",
+    "plotEssentials": "",
+    "cardsFile": "lore.json"
+  },
+  "layers": [
+    {
+      "name": "context",
+      "prompt": "Choose your context size. Larger contexts carry more lore at higher detail; smaller ones stay lean for the free tier.",
+      "options": [
+        { "title": "Low Context",  "flags": { "context": "low" } },
+        { "title": "High Context", "flags": { "context": "high" } }
+      ]
+    },
+    {
+      "name": "race",
+      "prompt": "Choose your race.",
+      "options": [
+        {
+          "title": "Human",
+          "flags": { "race": "human" },
+          "plotEssentials": "You are human: short-lived, adaptable, and underestimated."
+        },
+        {
+          "title": "Elf",
+          "flags": { "race": "elf" },
+          "plotEssentials": "You are an elf of the Aethel Wood: long-lived, and you remember things the world has tried to forget."
+        }
+      ]
+    },
+    {
+      "name": "age",
+      "prompt": "Choose your age. Older characters know more of the deep history.",
+      "options": [
+        { "title": "Young",   "flags": { "age": "young" } },
+        { "title": "Ancient", "flags": { "age": "ancient" } }
+      ]
+    },
+    {
+      "name": "start",
+      "prompt": "Choose where your story begins.",
+      "options": [
+        {
+          "title": "The Road",
+          "prompt": "A merchant caravan has offered you passage south, if you can earn your keep.",
+          "plotEssentials": "You are travelling south with a merchant caravan."
+        },
+        {
+          "title": "The Ruin",
+          "prompt": "Below you, half-swallowed by the Wood, the broken towers of an Elder ruin breathe cold air up the slope.",
+          "plotEssentials": "You are exploring an Elder ruin at the forest's edge."
+        }
+      ]
+    }
+  ]
+}

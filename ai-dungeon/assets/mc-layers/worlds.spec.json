@@ -1,0 +1,71 @@
+{
+  "title": "Layered Worlds",
+  "description": "Pick a setting, a species, and an era. Each choice layers its own lore and cards onto the start. Inner Self / Auto-Cards optional.",
+  "tags": ["fantasy", "scifi", "sandbox", "playerchoice"],
+  "rating": "teen",
+  "leaf": {
+    "type": "simple",
+    "prompt": "You come to in an unfamiliar place, with no memory of how you arrived.",
+    "aiInstructions": "Write in second person, present tense. Describe what others say and do; let the player drive their own choices.",
+    "plotEssentials": "",
+    "cards": []
+  },
+  "layers": [
+    {
+      "name": "setting",
+      "prompt": "Choose your world.",
+      "options": [
+        {
+          "title": "High Fantasy",
+          "plotEssentials": "The world is a realm of warring duchies, old magic, and uneasy crowns.",
+          "authorsNote": "Tone: epic, mythic.",
+          "cards": [
+            { "title": "Old Magic", "type": "Custom", "value": "Old magic predates the kingdoms. It answers to bloodline and oath, not study, and always exacts a price." }
+          ]
+        },
+        {
+          "title": "Cyberpunk",
+          "plotEssentials": "The world is a neon megacity owned in all but name by rival corporations.",
+          "authorsNote": "Tone: gritty noir.",
+          "cards": [
+            { "title": "The Corps", "type": "faction", "value": "Three megacorps run the city: Arasaka (security), Nadir (biotech), Halcyon (media). Law is whatever they can afford." }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "species",
+      "prompt": "Choose your species.",
+      "options": [
+        {
+          "title": "Human",
+          "plotEssentials": "You are human — unremarkable to look at, underestimated, adaptable.",
+          "cards": []
+        },
+        {
+          "title": "Synthetic",
+          "plotEssentials": "You are a synthetic: engineered body, edited memories, a person the law still argues about.",
+          "cards": [
+            { "title": "Synthetics", "type": "race", "value": "Synthetics are manufactured people. They age slowly, heal fast, and carry a registry tag most learn to forge." }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "era",
+      "prompt": "Choose an era.",
+      "options": [
+        {
+          "title": "Age of Founding",
+          "plotEssentials": "It is the founding age: borders are raw, institutions young, and a determined nobody can still shape what comes next.",
+          "cards": []
+        },
+        {
+          "title": "Age of Collapse",
+          "plotEssentials": "It is the collapse: the old order is failing, alliances fracture by the week, and survival is its own kind of ambition.",
+          "cards": []
+        }
+      ]
+    }
+  ]
+}

@@ -244,9 +244,54 @@ the per-layer option counts (3 layers of 2 = 8 leaves). Per leaf:
   path, deduped by title — a deeper layer's same-titled card wins, so a layer can override a
   shared card. Keys auto-generate from the title when omitted.
 
-`mc build` is offline (no token): it prints the tree with per-leaf card/PE sizes so you can
-see exactly what each leaf will contain, and `--out DIR` writes the compiled leaves as
-export-style `*.setup.json` / `*.cards.json` (named by branch path) for inspection.
+#### Flags and conditions (early layers set state, later layers consume it)
+
+When a layer shouldn't *add* content but should *influence* what later layers add — a
+context-size selector, a race/class that unlocks lore — use flags. Any option may set
+`flags`, which accumulate down the path (later layers win on a key collision). Any card or
+text fragment may carry a `when` condition tested against the accumulated flags; it's
+included only if the condition matches. This is the set-then-consume pattern: layer 1 sets
+`context`, layer 2 sets `race`, and a lore card gated `when: {race: elf, age: ancient}`
+appears only on the matching leaves.
+
+```json
+{
+  "leaf": { "type": "simple", "prompt": "...", "cardsFile": "lore.json" },
+  "layers": [
+    { "name": "context", "prompt": "Choose context size.",
+      "options": [
+        { "title": "Low Context",  "flags": { "context": "low" } },
+        { "title": "High Context", "flags": { "context": "high" } } ] },
+    { "name": "race", "prompt": "Choose race.",
+      "options": [
+        { "title": "Elf",   "flags": { "race": "elf" },   "plotEssentials": "You are an elf..." },
+        { "title": "Human", "flags": { "race": "human" }, "plotEssentials": "You are human." } ] }
+  ]
+}
+```
+
+```json
+// lore.json — same title, different detail; context picks the variant per leaf
+[
+  { "title": "The Sundering", "value": "(one terse line)",       "when": { "context": "low" } },
+  { "title": "The Sundering", "value": "(three detailed lines)", "when": { "context": "high" } },
+  { "title": "Aethel Wood",   "value": "(always present)" },
+  { "title": "Long Memory",   "value": "(elven lore)", "when": { "race": "elf", "age": "ancient" } }
+]
+```
+
+`when` semantics: a value is a scalar (`"high"`, equality) or a list (`["low","med"]`,
+membership); multiple keys AND together; an absent/empty `when` always includes. There's no
+negation — gate by inclusion. Detail levels fall out of variant selection: give two cards the
+same title with mutually exclusive `when`s and each leaf keeps the one that fits. Flags
+themselves never reach AID (they only steer the compile), and a `when` that names a flag no
+option sets is flagged as a warning (it would silently match nothing). A working example is
+`assets/mc-flags/` (`world.spec.json` + `lore.json`); `mc build` prints each leaf's
+accumulated flags next to its card/PE counts.
+
+`mc build` is offline (no token): it prints the tree with per-leaf card/PE sizes (and flags)
+so you can see exactly what each leaf will contain, and `--out DIR` writes the compiled
+leaves as export-style `*.setup.json` / `*.cards.json` (named by branch path) for inspection.
 
 `mc sync` writes it to AID. Without `--scenario` it creates a new root scenario; with one it
 syncs into an existing tree. It's **idempotent** — branches are matched by title at each

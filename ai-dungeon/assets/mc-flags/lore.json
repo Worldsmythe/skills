@@ -1,0 +1,36 @@
+[
+  {
+    "title": "The Sundering",
+    "keys": "Sundering, the Sundering",
+    "value": "The Sundering broke the old Elder empire. Most of what stood before it is rubble now.",
+    "type": "Lore",
+    "when": { "context": "low" }
+  },
+  {
+    "title": "The Sundering",
+    "keys": "Sundering, the Sundering, Elder empire",
+    "value": "The Sundering ended the Elder empire eight centuries ago, when the wardstones cracked and the Wood swallowed the cities whole. Survivors scattered into the kingdoms that quarrel today; the Elder roads still run beneath them, and the ruins still hum. Scholars argue whether the Sundering was a weapon, a punishment, or a mistake.",
+    "type": "Lore",
+    "when": { "context": "high" }
+  },
+  {
+    "title": "Aethel Wood",
+    "keys": "Aethel Wood, the Wood",
+    "value": "The Aethel Wood is an old forest that grows over the bones of the Elder empire. It moves a little when no one watches.",
+    "type": "Location"
+  },
+  {
+    "title": "The Long Memory",
+    "keys": "Long Memory, the Memory",
+    "value": "The Long Memory is the elven discipline of inherited recollection: an elf old enough can recall events from before their own birth as if they lived them. Humans find it unsettling; the Elder ruins answer to those who carry it.",
+    "type": "Lore",
+    "when": { "race": "elf", "age": "ancient" }
+  },
+  {
+    "title": "Wardstones",
+    "keys": "wardstone, wardstones",
+    "value": "Wardstones are Elder relics that bind the Wood back from the old roads. Most are cracked; a whole one is worth a duchy. Only deep history remembers how they were made.",
+    "type": "Lore",
+    "when": { "age": "ancient", "context": "high" }
+  }
+]

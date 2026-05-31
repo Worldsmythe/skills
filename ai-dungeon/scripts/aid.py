@@ -2159,8 +2159,10 @@ def cmd_scripts(args):
         sys.exit(1)
 
 
-def load_cards_file(path):
-    """Read a .json or .md cards file (autodetected) into normalized card dicts."""
+def load_cards_file(path, keep_when=False):
+    """Read a .json or .md cards file (autodetected) into normalized card dicts. With
+    keep_when, a card's `when` condition is preserved for the mc compiler (it strips it
+    before the card is sent); the destructive bulk commands leave keep_when off."""
     src = Path(path)
     if not src.exists():
         print(f"  ✗ File not found: {path}", file=sys.stderr)
@@ -2176,14 +2178,17 @@ def load_cards_file(path):
     cards = []
     for c in raw:
         title = c.get("title") or ""
-        cards.append({
+        card = {
             "keys": c.get("keys") or build_keys("", title),
             "value": c.get("value") or "",
             "type": c.get("type") or "character",
             "title": title,
             "description": c.get("description") or "",
             "useForCharacterCreation": bool(c.get("useForCharacterCreation")),
-        })
+        }
+        if keep_when and c.get("when"):
+            card["when"] = c["when"]
+        cards.append(card)
     if not cards:
         print(f"  ✗ No story cards found in {path}", file=sys.stderr)
         sys.exit(1)
