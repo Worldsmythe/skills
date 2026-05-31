@@ -1,0 +1,66 @@
+[
+  {
+    "keys": "Saltspire, the city",
+    "value": "Saltspire is a trade city built across a ring of black basalt sea-stacks, linked by rope-and-iron bridges. Storms never fully break here. Its three districts are the Tidemarket on the lower spans, the Lantern Spire crowning the tallest stack, and the flooded Underkeel below the waterline. Power is split between the Lantern Guild above and the Underkeel Pact below.",
+    "type": "Location",
+    "title": "Saltspire",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Lantern Spire, the Spire",
+    "value": "The Lantern Spire is the tallest sea-stack in Saltspire and the seat of the Lantern Guild. A storm-glass beacon burns at its peak, guiding ferries through the reefs. The Spire houses the Guild's marshals, its registry of Ember-bearers, and the academy where Embers are trained.",
+    "type": "Location",
+    "title": "The Lantern Spire",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Underkeel, the caverns",
+    "value": "The Underkeel is the warren of half-flooded basalt caverns beneath Saltspire's waterline, reachable only at low tide or by knowing the right tunnels. Smugglers, unregistered Ember-bearers, and the Underkeel Pact make their home here, out of reach of the Lantern Guild's marshals.",
+    "type": "Location",
+    "title": "The Underkeel",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Lantern Guild, the Guild, marshals",
+    "value": "The Lantern Guild governs Saltspire from the Lantern Spire. It licenses trade, keeps the beacon lit, and requires every Ember-bearer to register and wear a guild brand. Its marshals enforce the law on the high bridges. Marshal Veyra Tolm leads them. The Guild fears the Underkeel Pact above all.",
+    "type": "Faction",
+    "title": "Lantern Guild",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Underkeel Pact, the Pact",
+    "value": "The Underkeel Pact is a loose brotherhood of smugglers and unregistered Ember-bearers who refuse the Lantern Guild's brand. They control the Underkeel's tunnels and the black market that runs through them. Old Coromb brokers most of their dealings. The Pact swears its oaths to the Drowned Mother.",
+    "type": "Faction",
+    "title": "Underkeel Pact",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Drowned Mother",
+    "value": "The Drowned Mother is the sea-deity most of Saltspire quietly worships: patron of storms, of safe harbor, and of the dead lost beneath the waves. Sailors pour salt before a voyage; the Underkeel Pact swears its oaths in her name. The Lantern Guild calls her worship superstition, but few marshals sail without a coin for her.",
+    "type": "Lore",
+    "title": "The Drowned Mother",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Veyra, Marshal Tolm",
+    "value": "Marshal Veyra Tolm commands the Lantern Guild's marshals. She is broad-shouldered, grey at the temples, and incorruptible. She has hunted the Underkeel Pact for a decade and lost a brother to it. She is courteous to strangers and merciless to oath-breakers.",
+    "type": "Character",
+    "title": "Marshal Veyra Tolm",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Coromb, Old Coromb",
+    "value": "Old Coromb is the Underkeel Pact's fixer, a stooped, soft-spoken man who has brokered every important smuggling deal in Saltspire for thirty years. He trades in favors more than coin and remembers every one owed. He knows who in the Lantern Guild can be bought. He is the one contact named in your soaked letter.",
+    "type": "Character",
+    "title": "Old Coromb",
+    "description": "",
+    "useForCharacterCreation": false
+  }
+]

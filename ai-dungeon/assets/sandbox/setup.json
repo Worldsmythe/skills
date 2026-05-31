@@ -1,0 +1,20 @@
+{
+  "title": "Driftport (Sandbox Example)",
+  "description": "An original example of the sandbox pattern: a one-line hook, a short Author's Note, and empty AI Instructions. Steering is minimal; the world knowledge lives in a small set of story cards (cards.json).",
+  "type": "simple",
+  "tags": [
+    "sci fi",
+    "sandbox",
+    "open world",
+    "freedom",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Teen",
+  "prompt": "The freighter drops you at Driftport with a duffel, a week of credits, and no plan. The station never sleeps. What do you do?",
+  "plotEssentials": "",
+  "authorsNote": "Perspective: second person, present tense.\nDetailed and grounded; player-led, open-ended.",
+  "aiInstructions": "",
+  "storySummary": ""
+}

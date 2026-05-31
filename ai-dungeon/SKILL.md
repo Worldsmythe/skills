@@ -31,6 +31,7 @@ the platform rather than trusting these notes.
   model, search/discovery, draft-vs-published, practical gotchas.
 - `references/cli.md` — the `aid` CLI: discovery, details, story-card import/export,
   branch-tree inspection, the `aid mc` layered Multiple Choice builder, offline utilities.
+- `assets/README.md` — original ready-to-import example scenarios (one per design pattern) in
   the CLI's setup/cards JSON, plus the `mc-layers` spec for `aid mc`.
 
 ## Core Mental Model

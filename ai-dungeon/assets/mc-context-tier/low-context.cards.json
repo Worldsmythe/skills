@@ -1,0 +1,26 @@
+[
+  {
+    "keys": "Lantern Guild, the Guild, marshals",
+    "value": "The Lantern Guild governs Saltspire from the Lantern Spire above. It licenses trade, keeps the beacon lit, and brands every registered Ember-bearer. Its marshals enforce the law on the high bridges and hunt the Underkeel Pact.",
+    "type": "Faction",
+    "title": "Lantern Guild",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Underkeel Pact, the Pact",
+    "value": "The Underkeel Pact is the brotherhood of smugglers and unregistered Ember-bearers who control the flooded caverns below Saltspire. They refuse the Guild's brand. Old Coromb brokers their dealings.",
+    "type": "Faction",
+    "title": "Underkeel Pact",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Coromb, Old Coromb",
+    "value": "Old Coromb is the Underkeel Pact's fixer: stooped, soft-spoken, and owed favors by half the city. He trades in debts more than coin and is the one contact named in your soaked letter.",
+    "type": "Character",
+    "title": "Old Coromb",
+    "description": "",
+    "useForCharacterCreation": false
+  }
+]

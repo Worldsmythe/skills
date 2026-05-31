@@ -1,0 +1,19 @@
+{
+  "title": "Saltspire (Choose Context)",
+  "description": "An original example of context-tier-aware Multiple Choice navigation, modeled on Villain's Academy. The root is pure navigation: it branches by context size so each leaf carries a card budget suited to the player's tier. The root's own plot components are intentionally empty, because on a Multiple Choice scenario only leaf branches affect play.",
+  "type": "multipleChoice",
+  "tags": [
+    "fantasy",
+    "adventure",
+    "city",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "Welcome to Saltspire. First, choose your preferred context size. Free and low-context players should pick Low Context for a lean card set that fits a small budget. Higher-tier players can pick High Context for the full city.",
+  "plotEssentials": "",
+  "authorsNote": "",
+  "aiInstructions": "",
+  "storySummary": ""
+}

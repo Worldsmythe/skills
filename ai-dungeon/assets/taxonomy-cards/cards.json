@@ -1,0 +1,58 @@
+[
+  {
+    "keys": "Ember-bearer, Ember-bearers",
+    "value": "An Ember is an innate spark of elemental will that wakes in roughly one Saltspire child in twenty, usually around the sixteenth nameday. Every Ember falls into one of three Kindlings: Forge, Bulwark, or Veil. Using an Ember tires its bearer, and over-drawing one can burn out the bearer for days. The Lantern Guild registers and brands every known Ember-bearer.",
+    "type": "World Law",
+    "title": "Embers",
+    "description": "",
+    "useForCharacterCreation": true
+  },
+  {
+    "keys": "Kindling, Kindlings",
+    "value": "Every Ember belongs to one of three Kindlings: Forge (to emit and shape raw matter or energy outward), Bulwark (to armor, heal, or alter the bearer's own body), and Veil (to bend perception, light, and sound). A bearer has exactly one Kindling for life.",
+    "type": "World Law",
+    "title": "Kindling Types",
+    "description": "",
+    "useForCharacterCreation": true
+  },
+  {
+    "keys": "Forge-kindled, Kindling",
+    "value": "Forge Embers project and shape matter or energy outward: conjured flame, hurled stone, lances of brine, sparks of lightning. They are the loudest and most feared Kindling, and the easiest for Lantern Guild marshals to spot. Forge bearers tire fastest, since they spend their own strength to make something from nothing.",
+    "type": "World Law",
+    "title": "Forge Embers",
+    "description": "",
+    "useForCharacterCreation": true
+  },
+  {
+    "keys": "Bulwark-kindled, Kindling",
+    "value": "Bulwark Embers turn inward, armoring or remaking the bearer's own body: stone-hard skin, sealed wounds, lungs that breathe water, limbs that grow strong enough to bend iron. Bulwark bearers endure far more than they project, making them the Guild's prized marshals and the Underkeel's best divers.",
+    "type": "World Law",
+    "title": "Bulwark Embers",
+    "description": "",
+    "useForCharacterCreation": true
+  },
+  {
+    "keys": "Veil-kindled, Kindling",
+    "value": "Veil Embers bend perception: light, shadow, sound, and the small lies the eye is willing to believe. A Veil bearer can go unseen on a crowded bridge, throw a voice across a room, or make a copper coin look like gold for a heartbeat. They make the best smugglers, and the Lantern Guild trusts them least.",
+    "type": "World Law",
+    "title": "Veil Embers",
+    "description": "",
+    "useForCharacterCreation": true
+  },
+  {
+    "keys": "Lantern Spire, the Spire, the academy",
+    "value": "The Lantern Spire is the Lantern Guild's tower and the only academy in Saltspire that trains Embers. New bearers are registered, branded, and sorted into a Kindling here, then drilled by Guild instructors until their Ember answers to discipline rather than fear. Veil students are watched most closely.",
+    "type": "Location",
+    "title": "The Lantern Spire",
+    "description": "",
+    "useForCharacterCreation": true
+  },
+  {
+    "keys": "Kessa, Kessa Brine",
+    "value": "Kessa Brine is a third-year student at the Lantern Spire and your assigned mentor. Her Ember is Forge-kindled; she can draw a blade of white fire from her hand, though it costs her dearly. She is quick-tempered, generous, and quietly resentful of the brand on her wrist. She knows which instructors can be trusted.",
+    "type": "Character",
+    "title": "Kessa Brine",
+    "description": "",
+    "useForCharacterCreation": true
+  }
+]

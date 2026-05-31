@@ -1,0 +1,20 @@
+{
+  "title": "Saltspire: Ember Academy",
+  "description": "Train your Ember at the Lantern Spire. An original example scenario showing a taxonomy-hierarchy card set: one concept card and three subtype cards that share a trigger, so the AI gets the right level of detail automatically.",
+  "type": "characterCreator",
+  "tags": [
+    "fantasy",
+    "magic system",
+    "academy",
+    "powers",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "On your sixteenth nameday the Lantern Guild tests every child of Saltspire for an Ember. Yours woke last night, and it is not a quiet one. This morning you climb the wet stairs of the Lantern Spire to be registered, branded, and sorted into a Kindling. What is your name, and what does your Ember do?",
+  "plotEssentials": "You are a sixteen-year-old newly-woken Ember-bearer, registering at the Lantern Spire academy in Saltspire.",
+  "authorsNote": "Tone: grounded coming-of-age.",
+  "aiInstructions": "You are the storyteller. Write in second person, present tense. Treat the Ember system as physical and rule-bound: Embers tire their bearer, can be over-drawn, and draw the Lantern Guild's attention when used openly. Do not let the player's Ember solve every problem.",
+  "storySummary": ""
+}

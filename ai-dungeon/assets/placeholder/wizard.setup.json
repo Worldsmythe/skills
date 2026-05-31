@@ -1,0 +1,20 @@
+{
+  "title": "Build-a-Knight (Placeholder Wizard Example)",
+  "description": "An original example of the placeholder-wizard pattern: one long fill-in-the-blank opening builds the player's character and situation entirely from ${prompts}. The prompt IS the experience. Zero story cards.",
+  "type": "simple",
+  "tags": [
+    "fantasy",
+    "character creation",
+    "customizable",
+    "knight",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "You are ${What is your knight's name?}, ${a title or epithet, e.g. \"the Unproven\" or \"of the Ash Vale\"}. You are ${How old are you?} years old, with ${Describe your appearance in a line or two.}. You swore your oath to ${Who or what do you serve? A lord, a faith, a dead friend, only yourself?}.\n\nYour weapon is ${What do you fight with, and is there a story to it?}, and your armor is ${Describe your armor.}. The one thing you carry that you would never sell is ${What is your most prized possession?}.\n\nYou are known for one virtue and one flaw: you are ${Name a virtue.}, but also ${Name a flaw.}.\n\nThe war ended a year ago and left you with nothing to do and debts to pay. Tonight you are ${Where are you, and what trouble has just found you? Example: in a flooded tavern on the road south, when three of the lord's tax-men kick in the door looking for you by name.}",
+  "plotEssentials": "You are a knight at loose ends a year after a war that left you with debts and no master.",
+  "authorsNote": "Perspective: second person, present tense.\nGrounded low fantasy; coin is scarce and reputation matters.",
+  "aiInstructions": "",
+  "storySummary": ""
+}

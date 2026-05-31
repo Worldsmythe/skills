@@ -1,0 +1,34 @@
+[
+  {
+    "keys": "Driftport, the station",
+    "value": "Driftport is a sprawling trade station bolted onto a captured asteroid at the edge of charted space. It never sleeps and answers to no government. Three powers share it uneasily: the Dock Authority, the Combine, and the Freeholders.",
+    "type": "Location",
+    "title": "Driftport",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Dock Authority, the Authority",
+    "value": "The Dock Authority controls Driftport's airlocks, fuel, and docking fees. It is the closest thing the station has to law, but its writ ends where the fees stop being paid. It tolerates the Combine and despises the Freeholders.",
+    "type": "Faction",
+    "title": "Dock Authority",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Combine, the Combine",
+    "value": "The Combine is the merchant cartel that sets prices on Driftport. It owns most of the station's warehouses and half its debts. It prefers leverage to violence, but keeps plenty of both on retainer.",
+    "type": "Faction",
+    "title": "The Combine",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Freeholders",
+    "value": "The Freeholders are Driftport's underclass of squatters, mechanics, and unlicensed haulers who live in the station's unsanctioned lower rings. They keep Driftport running and resent everyone who profits from it. They will help a stranger who treats them fairly.",
+    "type": "Faction",
+    "title": "The Freeholders",
+    "description": "",
+    "useForCharacterCreation": false
+  }
+]

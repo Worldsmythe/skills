@@ -1,0 +1,19 @@
+{
+  "title": "Open Road (Placeholder Mirror Example)",
+  "description": "An original example of the placeholder-mirror pattern: the opening prompt asks the player a chain of ${questions}, and the same text is duplicated into Plot Essentials so the player's answers stay in always-on context after the prompt scrolls out of history. Zero story cards.",
+  "type": "simple",
+  "tags": [
+    "road trip",
+    "customizable",
+    "slice of life",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "You and two companions are halfway through a road trip with no destination. Your name is ${What is your character's name?}. You are a ${How old is your character, and what are they like? Example: 24, restless and broke.}. Riding with you is ${Who is the first companion, and how do you know them?}, and ${Who is the second companion, and how do you know them?}. You are travelling in a ${What are you travelling in? Example: a rusted orange van named Clementine.}, and right now you are ${Where are you right now, and what just happened? Example: pulled over at a desert gas station at 2am because the engine started smoking.}.",
+  "plotEssentials": "/remember Your name is ${What is your character's name?}. You are a ${How old is your character, and what are they like? Example: 24, restless and broke.}. Riding with you is ${Who is the first companion, and how do you know them?}, and ${Who is the second companion, and how do you know them?}. You are travelling in a ${What are you travelling in? Example: a rusted orange van named Clementine.}.",
+  "authorsNote": "Perspective: second person, present tense.\nWarm and character-driven; let the companions have their own opinions.",
+  "aiInstructions": "",
+  "storySummary": ""
+}

@@ -1,0 +1,18 @@
+{
+  "title": "The Late Shift",
+  "description": "A stranger walks into an all-night diner off Route 9, clutching something she won't let go of. A quiet, character-driven mystery you steer. The canonical Focused Simple Start example for the AI Dungeon skill.",
+  "type": "simple",
+  "tags": [
+    "slice of life",
+    "mystery",
+    "dramatic"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Teen",
+  "prompt": "Rain needles the windows and the coffee's gone bitter on the burner. Past two, and the booths are empty except for a trucker asleep over his pie. Del works the crossword by the register, glasses down his nose.\n\nThe bell over the door jangles. A woman steps in out of the dark, soaked through, clutching a paper bag to her chest like it might bolt. She scans the empty room and comes straight for your counter.",
+  "plotEssentials": "You are ${character.name}, ${character.gender}, ${Describe yourself in second person, e.g. \"You have dark hair and tired eyes.\"}.\n\nYou're the night cook at the Stardust Diner off Route 9, the only place open past midnight for thirty miles. Del, the owner, works the register; he's known you since you were a kid.",
+  "authorsNote": "Perspective: Second Person Present from ${character.name}'s point of view.\nPrioritize complex personality over flat statements; let people be tired, evasive, funny.",
+  "aiInstructions": "",
+  "storySummary": ""
+}

@@ -1,0 +1,18 @@
+{
+  "title": "High Context — The Full City",
+  "description": "A playable leaf branch for higher-tier players. Carries the full Saltspire card set. On a Multiple Choice scenario, the leaf branch is where the real plot components and cards live.",
+  "type": "simple",
+  "tags": [
+    "fantasy",
+    "adventure",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "Rain has not stopped over Saltspire in living memory. The city clings to a ring of black basalt sea-stacks, its districts strung together by groaning rope-and-iron bridges. Lantern Guild marshals walk the high spans; the Underkeel Pact works the flooded caverns below. You arrive on the dawn ferry with a soaked letter naming one contact, Old Coromb, who may already be dead.",
+  "plotEssentials": "",
+  "authorsNote": "Tone: harbor noir; rain-soaked and tense.",
+  "aiInstructions": "You are the storyteller and gamemaster. Write in second person, present tense. Judge > actions for realistic outcomes. Keep the city wet, cramped, and alive. Let danger be quiet and consequences real.",
+  "storySummary": ""
+}

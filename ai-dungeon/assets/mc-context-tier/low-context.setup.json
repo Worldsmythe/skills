@@ -1,0 +1,18 @@
+{
+  "title": "Low Context — Lean City",
+  "description": "A playable leaf branch for free and low-context players. Same world and opening as the High Context branch, but the card set is trimmed to three essentials so it fits a small token budget. The two leaves are the context-tier lesson: same scenario, right-sized card load per tier.",
+  "type": "simple",
+  "tags": [
+    "fantasy",
+    "adventure",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "Rain has not stopped over Saltspire in living memory. The city clings to a ring of black basalt sea-stacks, its districts strung together by groaning rope-and-iron bridges. Lantern Guild marshals walk the high spans; the Underkeel Pact works the flooded caverns below. You arrive on the dawn ferry with a soaked letter naming one contact, Old Coromb, who may already be dead.",
+  "plotEssentials": "Saltspire is a storm-wracked city of basalt sea-stacks. The Lantern Guild rules from above; the Underkeel Pact smuggles from the flooded caverns below. Old Coromb, the Pact's fixer, is your only contact.",
+  "authorsNote": "Tone: harbor noir; rain-soaked and tense.",
+  "aiInstructions": "You are the storyteller and gamemaster. Write in second person, present tense. Judge > actions for realistic outcomes. Keep the city wet, cramped, and alive.",
+  "storySummary": ""
+}

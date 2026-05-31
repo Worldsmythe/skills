@@ -1,0 +1,19 @@
+{
+  "title": "Blank Slate (Script-Driven Example)",
+  "description": "An original example of the script-as-product pattern, modeled on Auto-Cards. The opening is a single word and there are no hand-built story cards, because the value lives entirely in an installed script (e.g. Auto-Cards or Inner Self) that generates cards and tracks state during play. The scenario is just a launch pad. NOTE: the script itself is NOT bundled here — install it by cloning its canonical repo (see scripting.md), never by recreating it.",
+  "type": "simple",
+  "tags": [
+    "script",
+    "object permanence",
+    "sandbox",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "Begin.\n\n",
+  "plotEssentials": "",
+  "authorsNote": "",
+  "aiInstructions": "",
+  "storySummary": ""
+}

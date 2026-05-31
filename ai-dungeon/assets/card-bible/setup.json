@@ -1,0 +1,20 @@
+{
+  "title": "Saltspire",
+  "description": "A storm-wracked trade city built across a ring of black sea-stacks, where smugglers, guild marshals, and Ember-bearers all chase the same drowned secrets. An original example scenario for the AI Dungeon skill.",
+  "type": "simple",
+  "tags": [
+    "fantasy",
+    "adventure",
+    "city",
+    "intrigue",
+    "example"
+  ],
+  "thirdPerson": false,
+  "nsfw": false,
+  "contentRating": "Everyone",
+  "prompt": "Rain has not stopped over Saltspire in living memory. The city clings to a ring of black basalt sea-stacks, its districts strung together by rope-and-iron bridges that groan in the wind. Lantern Guild marshals walk the high spans; smugglers work the flooded caverns below. You arrive on the dawn ferry with a soaked letter, a borrowed name, and one contact who may already be dead.",
+  "plotEssentials": "",
+  "authorsNote": "Tone: harbor noir; rain-soaked and tense.",
+  "aiInstructions": "You are the storyteller and gamemaster. Write in second person, present tense.\n\nDescribe what people say and do, what places look like, and what happens. Do not narrate the player's private thoughts, feelings, or decisions for them.\n\nText preceded by > is an action the player attempts; judge it for a realistic outcome rather than guaranteeing success. Do not write > yourself.\n\nKeep the city wet, cramped, and alive: dripping bridges, lantern-light on water, the smell of brine and tar. Give minor characters specific names and one memorable trait. Let danger be quiet and consequences real.\n\nWrite plainly and concretely. Avoid purple metaphor. Do not summarize the story back to the player.",
+  "storySummary": ""
+}

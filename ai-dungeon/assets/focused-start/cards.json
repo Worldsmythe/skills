@@ -1,0 +1,18 @@
+[
+  {
+    "keys": "Del",
+    "value": "Del owns the Stardust Diner and works the register at night. Sixties, widower, dry. Has known ${character.name} since ${character.pronoun.they} was a kid and treats ${character.pronoun.them} like family. Won't discuss his late wife, Carol.",
+    "type": "Character",
+    "title": "Del",
+    "description": "",
+    "useForCharacterCreation": false
+  },
+  {
+    "keys": "Stardust, diner, Route 9",
+    "value": "The Stardust Diner stands alone off Route 9, thirty miles from the next open business. Open 24 hours. Chrome and cracked vinyl, half the booths patched with tape. Regulars: long-haul truckers, insomniacs, the odd cop.",
+    "type": "Location",
+    "title": "Stardust Diner",
+    "description": "",
+    "useForCharacterCreation": false
+  }
+]

@@ -170,6 +170,8 @@ Pick one; don't blend by habit.
   (branches don't inherit). Drives replayability. For layered trees, the `aid mc` builder in
   the `ai-dungeon` skill compiles them.
 
+The `ai-dungeon` skill's `assets/` directory has one ready-to-import example per shape.
+
 ## Where to go next
 
 - Mechanics — types, branch trees, placeholders, story-card fields, trigger words, tags,
