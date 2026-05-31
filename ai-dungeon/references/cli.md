@@ -2,7 +2,8 @@
 
 `scripts/aid.py` queries the AI Dungeon GraphQL API and works with story cards offline.
 Use it to inspect real scenarios, convert cards between formats, and generate trigger
-keys. It pairs with `scenario-design.md` and `scenario-patterns.md`.
+keys. It pairs with the `ai-dungeon-scenario-design` skill (design guidance and patterns)
+and this skill's `graphql-api.md` (the API surface it calls).
 
 > **Treat the user's account with care.** Mutating commands (`create`, `duplicate`,
 > `update`, `scripts`, `options`, `card`, `add-cards`, `import-cards`, `delete`,
@@ -12,6 +13,14 @@ keys. It pairs with `scenario-design.md` and `scenario-patterns.md`.
 > when useful. Be most careful with `delete`, `import-cards` (full replacement), and broad
 > `mine`/`creator`/`analyze` sweeps. Never publish on the user's behalf; publishing is
 > moderation-gated in the web app.
+
+## Table of Contents
+- [Setup](#setup) (incl. Authentication)
+- [Commands](#commands): Discovery, Story Cards, Creating, Editing, Multiple Choice /
+  Character Creator structure, the `mc` tree builder, MC Inspection, Analysis, Offline Utilities
+- [Global Flags](#global-flags)
+- [Draft vs published](#draft-vs-published)
+- [Notes](#notes)
 
 ## Setup
 
@@ -76,8 +85,8 @@ case-sensitively by the API, so pass them as the canonical lowercase form.
 
 `details` now returns the full plot components (Plot Essentials, Author's Note, AI
 Instructions, Story Summary) and classifies the scenario's design pattern (card-bible,
-placeholder-driven, sandbox, MC-navigation, etc.) using the same taxonomy as
-`scenario-patterns.md`.
+placeholder-driven, sandbox, MC-navigation, etc.) using the same taxonomy as the
+`ai-dungeon-scenario-design` skill's proven scenario shapes.
 
 ### Story Cards (needs token)
 
@@ -138,7 +147,8 @@ tiny `onInput` no longer re-uploads a 900KB shared library. `--dry-run` previews
 To install a community script, **clone its repo and push it — never recreate it**:
 `git clone --depth 1 <repo> /tmp/x && aid scripts <shortId> --scripts-dir /tmp/x/src`.
 For clone links, per-hook notes, combining multiple scripts, and the compatibility matrix,
-see `scripting.md` → "Installing and Combining Scripts" / "Script Catalog and Compatibility".
+see the `ai-dungeon-scenario-design` skill's script catalog; for how the hooks work, the
+`ai-dungeon-scripting` skill.
 
 `--type {simple,multipleChoice,characterCreator}` converts a scenario's type. Note
 Multiple Choice and Character Creator scenarios need child option branches to be
@@ -357,10 +367,10 @@ The json block is optional and holds only non-default metadata (keys that differ
 auto-generated, plus non-default type/description/useForCharacterCreation). When omitted,
 keys auto-generate from the title and type defaults to "character". The conversion
 round-trips cleanly. For the underlying field meanings (and the `value`-vs-`entry`
-naming gotcha), see `gameplay.md` → "Story Cards During Play".
+naming gotcha), see this skill's `graphql-api.md` → "StoryCard Object".
 
-**`tags`** checks the 10-tag limit, flags spaces (engine reads only the first token),
-special characters, and uppercase, and emits a cleaned list. With no arguments it prints
+**`tags`** checks the 10-tag limit and normalizes case (tags are case-insensitive),
+emitting a cleaned list. Spaces and ordinary punctuation are fine in modern tags. With no arguments it prints
 the category-based tagging guide.
 
 ## Global Flags

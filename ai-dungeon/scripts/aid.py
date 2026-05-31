@@ -647,50 +647,47 @@ def markdown_to_cards(md):
 
 # ─── Tag Validation ──────────────────────────────────────────────────────────
 
-# Curated examples from Yuki's tagging guide, by category.
+# Curated examples from Yuki's tagging guide, by category. Spaces are fine in modern tags,
+# so these read as natural phrases. Don't spend a tag on the default second-person POV.
 TAG_SUGGESTIONS = {
-    "genre (max 2)": ["fantasy", "scifi", "romance", "horror", "isekai", "mystery",
-                       "comedy", "historical", "sliceoflife", "superhero", "thriller"],
-    "themes (as needed)": ["redemption", "betrayal", "comingofage", "foundfamily",
-                            "identity", "revenge", "powerfantasy", "forbiddenlove",
-                            "tragedy", "darkhumor"],
+    "genre (max 2)": ["fantasy", "sci fi", "romance", "horror", "isekai", "mystery",
+                       "comedy", "historical", "slice of life", "superhero", "thriller"],
+    "themes (as needed)": ["redemption", "betrayal", "coming of age", "found family",
+                            "identity", "revenge", "power fantasy", "forbidden love",
+                            "tragedy", "dark humor"],
     "setting (max 3)": ["medieval", "modern", "futuristic", "urban", "dystopia",
-                        "space", "dreamworld", "virtualreality", "academy",
-                        "underworld", "forestrealm"],
+                        "space", "dreamworld", "virtual reality", "academy",
+                        "underworld", "forest realm"],
     "tone (1-3)": ["comedic", "dramatic", "romantic", "dark", "serious", "silly",
                    "sad", "mysterious", "wholesome", "edgy"],
-    "style": ["secondperson", "firstperson", "thirdperson", "journalformat",
-              "questbased", "sandbox", "multiplepovs", "nonlinear", "scripted"],
-    "custom features": ["customstats", "dicerolls", "inventory", "companion",
-                        "questlog", "skillchecks", "playerchoice", "eventtriggers",
-                        "systemmessages"],
+    "style": ["first person", "third person", "journal format",
+              "quest based", "sandbox", "multiple povs", "nonlinear", "scripted"],
+    "custom features": ["custom stats", "dice rolls", "inventory", "companion",
+                        "quest log", "skill checks", "player choice", "event triggers",
+                        "system messages"],
 }
 
 
 def lint_tags(tags):
     """
-    Validate tags against AI Dungeon's formatting rules. Returns (cleaned, issues)
-    where `issues` is a list of human-readable warnings/fixes.
+    Validate tags against AI Dungeon's rules. Returns (cleaned, issues) where `issues`
+    is a list of human-readable warnings. Modern tags allow spaces and ordinary
+    punctuation ("slice of life" is one tag), so the only hard rule is the 10-tag limit.
+    Tags are case-insensitive, so they're normalized to lowercase; internal whitespace is
+    collapsed and ends trimmed.
     """
     issues = []
     cleaned = []
     if len(tags) > 10:
         issues.append(f"✗ {len(tags)} tags — the limit is 10. Drop {len(tags) - 10}.")
     for tag in tags:
-        original = tag
-        fixed = tag
-        if any(c.isspace() for c in tag):
-            fixed = re.sub(r"\s+", "", fixed)
-            issues.append(f"⚠ '{original}' has spaces — engine reads only the first token. Use '{fixed}'.")
-        if re.search(r"[^a-zA-Z0-9]", fixed):
-            stripped = re.sub(r"[^a-zA-Z0-9]", "", fixed)
-            issues.append(f"⚠ '{original}' has special characters — use '{stripped}'.")
-            fixed = stripped
+        fixed = re.sub(r"\s+", " ", tag).strip()
+        if not fixed:
+            continue
         if fixed != fixed.lower():
-            issues.append(f"⚠ '{original}' has uppercase — tags are case-sensitive, prefer '{fixed.lower()}'.")
+            issues.append(f"⚠ '{tag}' has uppercase — tags are case-insensitive; using '{fixed.lower()}'.")
             fixed = fixed.lower()
-        if fixed:
-            cleaned.append(fixed)
+        cleaned.append(fixed)
     return cleaned, issues
 
 
@@ -1073,9 +1070,10 @@ def _diff_preview(val, width=70):
 # per-leaf content; `mc sync` then writes that tree to AID.
 
 def normalize_card(c):
-    """One story card in import shape, with keys auto-built from the title if absent."""
+    """One story card in import shape, with keys auto-built from the title if absent. A
+    compile-time `when` condition is preserved (stripped later, before the card is sent)."""
     title = c.get("title") or ""
-    return {
+    out = {
         "keys": c.get("keys") or build_keys("", title),
         "value": c.get("value") or c.get("entry") or "",
         "type": c.get("type") or "character",
@@ -1083,6 +1081,9 @@ def normalize_card(c):
         "description": c.get("description") or "",
         "useForCharacterCreation": bool(c.get("useForCharacterCreation")),
     }
+    if c.get("when"):
+        out["when"] = c["when"]
+    return out
 
 
 def merge_text(parts):
@@ -1106,13 +1107,96 @@ def merge_cards(card_lists):
     return out
 
 
+# ─── Flags and conditions (the layered-spec macro system) ────────────────────
+# Options can set `flags` that accumulate down the root→leaf path; cards and text
+# fragments can carry a `when` condition tested against those accumulated flags. This
+# lets early layers set state (context size, race) that later layers consume to decide
+# which lore cards / plot-essentials fragments a leaf gets, and at what detail.
+
+def accumulate_flags(chosen):
+    """Merge each chosen option's `flags` dict in path order; later layers win on collision."""
+    flags = {}
+    for o in chosen:
+        f = o.get("flags")
+        if isinstance(f, dict):
+            flags.update(f)
+    return flags
+
+
+def when_matches(when, flags):
+    """True when every key in `when` matches the accumulated flags. A value is a scalar
+    (equality) or a list (membership); keys AND together. Absent/empty `when` always matches.
+    No negation by design — gate content by inclusion, not exclusion."""
+    if not isinstance(when, dict) or not when:
+        return True
+    for key, allowed in when.items():
+        actual = flags.get(key)
+        choices = allowed if isinstance(allowed, list) else [allowed]
+        if actual not in choices:
+            return False
+    return True
+
+
+def resolve_text_parts(value, flags):
+    """Expand a text field into its included fragments. A field is either a plain string
+    (always included) or a list whose items are strings or `{text, when}` objects gated by
+    flags. Returns a list of strings for merge_text."""
+    if not value:
+        return []
+    if isinstance(value, str):
+        return [value]
+    parts = []
+    for item in value:
+        if isinstance(item, str):
+            parts.append(item)
+        elif isinstance(item, dict) and when_matches(item.get("when"), flags):
+            parts.append(item.get("text", ""))
+    return parts
+
+
+def strip_when(card):
+    """A copy of the card without its compile-time `when` key, so it never reaches the API."""
+    if "when" in card:
+        return {k: v for k, v in card.items() if k != "when"}
+    return card
+
+
+def collect_flag_keys(layers):
+    """All flag keys any option declares — the set a `when` may legitimately reference."""
+    keys = set()
+    for layer in layers:
+        for opt in (layer.get("options") or []):
+            f = opt.get("flags")
+            if isinstance(f, dict):
+                keys.update(f.keys())
+    return keys
+
+
+def collect_when_keys(value):
+    """Every flag key referenced by a `when` block anywhere in a spec value (structural walk)."""
+    found = set()
+
+    def visit(v):
+        if isinstance(v, dict):
+            if isinstance(v.get("when"), dict):
+                found.update(v["when"].keys())
+            for vv in v.values():
+                visit(vv)
+        elif isinstance(v, list):
+            for vv in v:
+                visit(vv)
+
+    visit(value)
+    return found
+
+
 def spec_cards(node, spec_dir):
     """Resolve a spec node's cards: inline `cards` plus an optional `cardsFile` (relative
-    to the spec file). load_cards_file already normalizes, so wrap inline cards to match."""
+    to the spec file). Both preserve a `when` condition for compile-time gating."""
     cards = [normalize_card(c) for c in (node.get("cards") or [])]
     cf = node.get("cardsFile")
     if cf:
-        cards += load_cards_file(str(spec_dir / cf))
+        cards += load_cards_file(str(spec_dir / cf), keep_when=True)
     return cards
 
 
@@ -1135,22 +1219,61 @@ def load_spec(path):
         if not layer.get("options"):
             print(f"  ✗ Layer {i} ('{layer.get('name', i)}') has no options.", file=sys.stderr)
             sys.exit(1)
+
+    # Catch the silent failure mode: a `when` that names a flag no option ever sets will
+    # never match, so its card/fragment vanishes from every leaf. Warn rather than fail.
+    declared = collect_flag_keys(layers)
+    referenced = collect_when_keys(spec.get("leaf")) | collect_when_keys(layers)
+    nodes = [spec.get("leaf")] + [o for layer in layers for o in (layer.get("options") or [])]
+    for node in nodes:
+        cf = (node or {}).get("cardsFile")
+        if not cf:
+            continue
+        cfp = p.parent / cf
+        try:
+            data = json.loads(cfp.read_text(encoding="utf-8"))
+            referenced |= collect_when_keys(data)
+        except (OSError, json.JSONDecodeError):
+            pass
+    unknown = referenced - declared
+    if unknown:
+        print(f"  ⚠ when-conditions reference flag(s) no option sets: "
+              f"{', '.join(sorted(unknown))}. Those conditions never match — check for typos.",
+              file=sys.stderr)
     return spec, p.parent
 
 
 def compile_leaf(spec, chosen, spec_dir):
     """Compile one accumulated root→leaf path of chosen options into a leaf's setup + cards.
-    Text fields concatenate (base, then each option in path order); cards union."""
+
+    Flags from every chosen option accumulate first; then text fragments and cards carrying a
+    `when` are kept only if they match those flags. Text fields concatenate (base, then each
+    option in path order); cards union (later layers win on title). Returns (setup, cards, flags).
+    """
+    flags = accumulate_flags(chosen)
     leaf = spec.get("leaf") or {}
+    sources = [leaf] + list(chosen)
+
+    def field(name):
+        parts = []
+        for src in sources:
+            parts.extend(resolve_text_parts(src.get(name, ""), flags))
+        return merge_text(parts)
+
     setup = {
         "type": leaf.get("type") or "simple",
-        "prompt": merge_text([leaf.get("prompt", "")] + [o.get("prompt", "") for o in chosen]),
-        "plotEssentials": merge_text([leaf.get("plotEssentials", "")] + [o.get("plotEssentials", "") for o in chosen]),
-        "authorsNote": merge_text([leaf.get("authorsNote", "")] + [o.get("authorsNote", "") for o in chosen]),
-        "aiInstructions": merge_text([leaf.get("aiInstructions", "")] + [o.get("aiInstructions", "") for o in chosen]),
+        "prompt": field("prompt"),
+        "plotEssentials": field("plotEssentials"),
+        "authorsNote": field("authorsNote"),
+        "aiInstructions": field("aiInstructions"),
     }
-    cards = merge_cards([spec_cards(leaf, spec_dir)] + [spec_cards(o, spec_dir) for o in chosen])
-    return setup, cards
+
+    raw = []
+    for src in sources:
+        raw.extend(spec_cards(src, spec_dir))
+    kept = [strip_when(c) for c in raw if when_matches(c.get("when"), flags)]
+    cards = merge_cards([kept])
+    return setup, cards, flags
 
 
 def build_tree_plan(spec, spec_dir):
@@ -1164,8 +1287,8 @@ def build_tree_plan(spec, spec_dir):
 
     def rec(depth, chosen):
         if depth == len(layers):
-            setup, cards = compile_leaf(spec, chosen, spec_dir)
-            return {"leaf": True, "setup": setup, "cards": cards}
+            setup, cards, flags = compile_leaf(spec, chosen, spec_dir)
+            return {"leaf": True, "setup": setup, "cards": cards, "flags": flags}
         layer = layers[depth]
         node = {"leaf": False, "prompt": layer.get("prompt", ""),
                 "layer": layer.get("name") or f"layer{depth}", "children": []}
@@ -1207,7 +1330,9 @@ def print_plan(node, prefix="", is_last=True, depth=0):
     if node.get("leaf"):
         pe = len(node["setup"]["plotEssentials"])
         nc = len(node.get("cards") or [])
-        print(f"  {prefix}{connector}{node['title']}  ◆ leaf  [{nc} cards, {pe} PE chars]")
+        flags = node.get("flags") or {}
+        flag_str = ("  {" + " ".join(f"{k}={v}" for k, v in flags.items()) + "}") if flags else ""
+        print(f"  {prefix}{connector}{node['title']}  ◆ leaf  [{nc} cards, {pe} PE chars]{flag_str}")
     else:
         print(f"  {prefix}{connector}{node['title']}  (menu)")
         child_prefix = prefix + ("   " if is_last else "│  ")

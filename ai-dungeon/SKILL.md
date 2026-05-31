@@ -1,99 +1,47 @@
 ---
 name: ai-dungeon
 description: >
-  Reference guide for AI Dungeon gameplay, scenario design, story cards, plot
-  components, context budgeting, tier limits, models, GraphQL API usage, and
-  scripting. Use when the user mentions AI Dungeon, AID, story cards, author's
-  note in an AI Dungeon context, Plot Essentials, Do/Say/Story/Continue actions,
-  scenario branches, Character Creator, AI Dungeon adventures, AI Dungeon scripts,
-  or wants to brainstorm, design, debug, analyze, or publish an AI Dungeon scenario.
+  Inspect, query, and manage AI Dungeon data through its GraphQL API and the bundled aid
+  CLI: auth and tokens, scenario search and details, story-card import/export and conversion,
+  trigger-key generation, branch trees, the layered Multiple Choice builder, and the
+  platform/context model (Scenario vs Adventure, the context-assembly order, tiers). Use for
+  AI Dungeon API, CLI, data inspection, or platform-mechanics questions. For designing
+  scenarios see the ai-dungeon-scenario-design skill, for playing see ai-dungeon-gameplay,
+  for writing scripts see ai-dungeon-scripting.
 ---
 
 # AI Dungeon
 
-Use this skill for Phoenix-era AI Dungeon work on play.aidungeon.com and
-beta.aidungeon.com: gameplay coaching, scenario design, story cards, plot
-components, scripting, API inspection, and context-budget reasoning.
+The platform hub for Phoenix-era AI Dungeon (play.aidungeon.com, beta.aidungeon.com): the
+data/API layer and the bundled `aid` CLI. This skill is for *inspecting and managing*
+AI Dungeon content; the companion skills cover the craft:
 
-## Working Process
+- **ai-dungeon-scenario-design** — designing scenarios (Plot Essentials, Author's Note, AI
+  Instructions, story cards, branch trees, placeholders, tags, the script catalog). 
+- **ai-dungeon-gameplay** — playing well (context management, Retry/Edit+Continue, `/reset`,
+  markdown-header steering, fixing drift).
+- **ai-dungeon-scripting** — writing JavaScript scenario scripts (hooks, state, sandbox).
 
-1. Identify the task shape: design/brainstorming, gameplay troubleshooting,
-   scripting, API/data inspection, or publishing polish.
-2. Read only the relevant reference files below. Do not load every reference by
-   default.
-3. For current platform facts such as models, tiers, trending scenarios, prices,
-   or limits, verify live when possible. AI Dungeon changes often.
-4. Give concrete artifacts when useful: Plot Essentials text, AI Instructions,
-   Author's Note, opening prompt, story cards, branch outline, script snippets,
-   or tag lists.
-5. For scripts and generated scenario content, keep the first version practical
-   and testable. Prefer compact, direct components over world-bible prose.
+AI Dungeon changes often. For live facts (models, tiers, prices, trending), verify against
+the platform rather than trusting these notes.
 
 ## Reference Map
 
-- `references/scenario-design.md`: scenario structure, branch trees, leaf vs
-  non-leaf behavior, scenario types, placeholders, trigger words, tags, publishing
-- `references/scenario-patterns.md`: popular-scenario patterns, component strategy,
-  card strategy, design workflow, community script infrastructure
-- `references/gameplay.md`: context and tier budgeting, component maintenance,
-  story card usage during play, coherence techniques, troubleshooting
-- `references/scripting.md`: JavaScript hooks, state, memory overrides, story card
-  APIs, sandbox limits, script patterns, TypeScript declarations
-- `references/graphql-api.md`: GraphQL endpoint, auth, key queries, content model,
-  search/discovery notes
-- `references/cli.md`: bundled CLI usage for API querying, scenario analysis,
-  branch inspection, card conversion, trigger-key generation, and tag linting
-
-## Bundled CLI
-
-The bundled script is `scripts/aid.py`. Its examples use `aid` as the installed
-command name; run it as `python scripts/aid.py ...` from the skill folder when
-it is not installed on PATH.
-
-Use it when the user asks to inspect real AI Dungeon data, analyze public
-scenarios, generate story-card trigger keys, convert cards, or lint tags.
-Networked commands need `requests` and a Firebase token; `keys`, `convert`, and
-`tags` work offline without either.
-
-Common commands:
-
-```bash
-python scripts/aid.py token extract
-python scripts/aid.py trending --rating everyone --days 7
-python scripts/aid.py popular --limit 10
-python scripts/aid.py details <shortId>
-python scripts/aid.py cards <shortId> --md
-python scripts/aid.py tree <shortId>
-python scripts/aid.py analyze popular --deep --sfw
-python scripts/aid.py keys "elf"
-python scripts/aid.py tags fantasy romance darkhumor
-```
-
-### Caution with the user's account
-
-The CLI authenticates as the user. Treat public reads very differently from commands that
-touch live content: `create`, `duplicate`, `update`, `scripts`, `options`, `card`,
-`add-cards`, `import-cards`, `delete`, `restore`.
-
-- Mutate only with clear, specific permission — but an explicit request to act on the
-  user's **own** scenario, with a token they provided or imported, *is* that permission:
-  proceed, don't re-litigate the credentials. State the action first, preview when useful,
-  and do not reflexively pass `--yes`. Reserve hesitation for destructive ops and
-  unprompted/ambiguous actions.
-- Be especially careful with `delete`, `import-cards` (replaces the whole card set), and
-  `add-cards` (writes multiple cards).
-- Never publish on the user's behalf. Publishing is moderation-gated in the web app.
-- Do not enumerate libraries, creator catalogs, or broad analysis sweeps unless asked.
-  Default to read-only, single-target work.
+- `references/graphql-api.md` — GraphQL endpoint, auth, key queries and mutations, content
+  model, search/discovery, draft-vs-published, practical gotchas.
+- `references/cli.md` — the `aid` CLI: discovery, details, story-card import/export,
+  branch-tree inspection, the `aid mc` layered Multiple Choice builder, offline utilities.
+  the CLI's setup/cards JSON, plus the `mc-layers` spec for `aid mc`.
 
 ## Core Mental Model
 
-A Scenario is a reusable template. An Adventure is a single playthrough created
-from a scenario. Each turn, AI Dungeon assembles context from layered plot
-components, triggered story cards, summary/memory systems, recent history, and
-the latest action, then sends that context to the selected model.
+A **Scenario** is a reusable template. An **Adventure** is a single playthrough created from
+a scenario. Each turn, AI Dungeon assembles a context window from layered plot components,
+triggered story cards, summary/memory systems, recent history, and the latest action, then
+sends it to the selected model.
 
-Context order:
+Context-assembly order (the canonical reference; beginning and end positions get the most
+model attention):
 
 ```text
 1. AI Instructions
@@ -108,58 +56,47 @@ Context order:
 10. Buffer Tokens
 ```
 
-Beginning and end positions are strongest. Plot Essentials and Author's Note are
-therefore the highest-leverage steering tools.
+Plot Essentials (near the top) and the Author's Note (near the bottom) are therefore the
+highest-leverage steering tools. The `ai-dungeon-gameplay` skill covers using this during
+play; the `ai-dungeon-scenario-design` skill covers authoring each component.
 
-## Design Defaults
+A scenario also has a **draft** and a **published snapshot**; publishing is moderation-gated
+in the web app. See `references/graphql-api.md` → "Draft vs Published."
 
-Start scenario design in this order unless the user's request points elsewhere:
+## Bundled CLI
 
-1. AI Instructions: POV, tense, style, behavior rules, hard constraints
-2. Plot Essentials: always-true facts about protagonist, world, companions, goals
-3. Author's Note: short tone/genre/current-scene steering
-4. Story Cards: entities that matter only when triggered
-5. Opening: short hook with an immediate situation or choice
-6. Branches, placeholders, Character Creator, or scripts only when they serve the
-   scenario's actual shape
+The script is `scripts/aid.py`. Examples use `aid` as the installed command name; run it as
+`python scripts/aid.py ...` from this skill's folder when it isn't on PATH. Networked
+commands need `requests` and a Firebase token; `keys`, `convert`, and `tags` work offline.
 
-Do not spread a scenario thin across every system by habit. Successful designs
-usually commit to one primary strategy: card bible, placeholder template,
-script-driven play, focused Simple Start premise, or Multiple Choice replay
-structure.
+```bash
+python scripts/aid.py token extract                # how to get a token from the browser
+python scripts/aid.py trending --rating everyone --days 7
+python scripts/aid.py popular --limit 10
+python scripts/aid.py details <shortId>
+python scripts/aid.py cards <shortId> --md
+python scripts/aid.py tree <shortId>
+python scripts/aid.py mc build worlds.spec.json    # compile a layered MC tree (offline)
+python scripts/aid.py analyze popular --deep --sfw
+python scripts/aid.py keys "elf"
+python scripts/aid.py tags fantasy romance darkhumor
+```
 
-## Critical AI Dungeon Gotchas
+Full command reference and the `aid mc` spec format: `references/cli.md`.
 
-- Multiple Choice non-leaf branches are menu/setup only. Their plot components,
-  story cards, scripts, and placeholders do not enter the final adventure.
-- Child branches do not inherit parent content. Each playable leaf needs its own
-  complete plot components and cards.
-- Story Card Name, Type, Triggers, and Notes are not AI-visible during play.
-  The Entry is what gets injected.
-- Repeat the subject name inside every Story Card Entry.
-- Story Cards are world reference (people, places, factions, items, lore) surfaced when
-  triggered — not adventure hooks or premise. Hooks/premise go in the Opening and Plot
-  Essentials.
-- Trigger matching is case-insensitive substring matching. Short/common triggers
-  need space or punctuation guards to avoid false positives.
-- AI-written trigger words usually activate cards on the next turn, not the
-  current one.
-- Custom AI Instructions replace the defaults; they do not layer on top.
-- Author's Note works because of position, not length. Keep it short.
-- Story Summary and Memory Bank are automated persistence systems, but stale Plot
-  Essentials and verbose cards can still pull the story off course.
-- Edit + Continue is usually a better correction loop than repeated retries.
-- Install community scripts by cloning the canonical repo (see `references/scripting.md`),
-  never by recreating them or hand-editing the live scripts. Script emoji-markers
-  (`[IS🎭]`, `[🎴]`, `[🦊]`) go in the scenario title/description as credit, never on cards.
+### Caution with the user's account
 
-## Action Modes
+The CLI authenticates as the user. Treat public reads very differently from commands that
+touch live content: `create`, `duplicate`, `update`, `scripts`, `options`, `card`,
+`add-cards`, `import-cards`, `delete`, `restore`, `mc sync`.
 
-- Do: character action, shown to the model as `> You ...`
-- Say: dialogue, shown as `> You say, "..."`
-- Story: raw narration, best for scene setting, corrections, and non-player POVs
-- Continue: no new input; the model extends the latest story state
-- See: image generation prompt
-
-Overusing Do/Say creates repetitive `> You...` rhythm. Mix Story mode for
-scene-setting and correction.
+- Mutate only with clear, specific permission — but an explicit request to act on the
+  user's **own** scenario, with a token they provided or imported, *is* that permission:
+  proceed, don't re-litigate the credentials. State the action first, preview when useful,
+  and do not reflexively pass `--yes`. Reserve hesitation for destructive ops and
+  unprompted/ambiguous actions.
+- Be especially careful with `delete`, `import-cards` (replaces the whole card set), and
+  `add-cards`/`mc sync` (write multiple branches/cards).
+- Never publish on the user's behalf. Publishing is moderation-gated in the web app.
+- Do not enumerate libraries, creator catalogs, or broad analysis sweeps unless asked.
+  Default to read-only, single-target work.
