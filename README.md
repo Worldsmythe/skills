@@ -1,6 +1,6 @@
 # Worldsmythe's Agent Skills
 
-Personal Codex skills.
+Personal agent skills.
 
 ## Skills
 
